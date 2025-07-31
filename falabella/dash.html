@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Adopción IA - Falabella RRHH</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Custom styles to complement Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light gray background for the page */
+        }
+        .chart-container {
+            position: relative;
+            height: 40vh;
+            width: 100%;
+        }
+        .kpi-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+        .card-header {
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+        .table-bar {
+            display: block;
+            height: 100%;
+            background-color: #3b82f6; /* Blue-500 */
+            border-radius: 0.25rem;
+        }
+        /* Tooltip styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 250px;
+            background-color: #334155; /* Slate-700 */
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 10;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+            font-weight: 400;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <!-- Header Section -->
+    <header class="bg-white shadow-md sticky top-0 z-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex-shrink-0">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Dashboard de Adopción de IA</h1>
+                    <p class="text-sm text-gray-500">Resultados Encuesta Equipo RRHH Falabella</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                     <label for="areaFilter" class="text-sm font-medium text-gray-600 hidden sm:block">Filtrar por Área:</label>
+                     <select id="areaFilter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full sm:w-64 p-2.5 shadow-sm">
+                        <option value="global" selected>Visión Global</option>
+                        <option value="atraccion">Atracción de Talento</option>
+                        <option value="rrhh">Recursos Humanos</option>
+                        <option value="comunicaciones">Comunicaciones Internas</option>
+                        <option value="desarrollo">Desarrollo Organizacional</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Content -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- Section 1: KPIs and Initial Distribution -->
+        <section id="kpi-section" class="mb-8">
+            <h2 id="kpi-title" class="text-xl font-bold mb-4">Análisis Global - Perfil de Participantes</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- KPI Cards -->
+                <div class="kpi-card text-center">
+                    <h3 class="text-lg font-semibold text-gray-500">Total Participantes</h3>
+                    <p id="kpi-total" class="text-4xl font-extrabold text-blue-600 mt-2">43</p>
+                </div>
+                <div class="kpi-card text-center">
+                    <h3 class="text-lg font-semibold text-gray-500">Con Equipo a Cargo</h3>
+                    <p id="kpi-con-equipo" class="text-4xl font-extrabold text-blue-600 mt-2">20</p>
+                    <span id="kpi-con-equipo-pct" class="text-sm text-gray-500">(46.5%)</span>
+                </div>
+                <div class="kpi-card text-center">
+                    <h3 class="text-lg font-semibold text-gray-500">Sin Equipo a Cargo</h3>
+                    <p id="kpi-sin-equipo" class="text-4xl font-extrabold text-blue-600 mt-2">23</p>
+                    <span id="kpi-sin-equipo-pct" class="text-sm text-gray-500">(53.5%)</span>
+                </div>
+                <div class="kpi-card text-center">
+                    <h3 class="text-lg font-semibold text-gray-500">Familiaridad con IA</h3>
+                    <p id="kpi-familiaridad" class="text-4xl font-extrabold text-blue-600 mt-2">3.86<span class="text-2xl text-gray-400">/5</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Distribution Charts -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div id="distribucion-container" class="kpi-card">
+                <div class="card-header">
+                    <h3 class="text-lg font-semibold">Distribución de Participantes por Área</h3>
+                </div>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="distribucionChart"></canvas>
+                </div>
+            </div>
+            <div class="kpi-card">
+                 <div class="card-header">
+                    <h3 id="tiempo-title" class="text-lg font-semibold">Distribución de Tiempo en Tareas Operativas</h3>
+                    <p id="tiempo-insight" class="text-sm text-gray-500 mt-1">La mayoría del equipo (37.2%) tiene un balance operativo-estratégico.</p>
+                </div>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="tiempoOperativoChart"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 3: Maturity Metrics -->
+        <section class="kpi-card mb-8">
+            <div class="card-header">
+                <h3 class="text-lg font-semibold">Métricas de Evaluación de Madurez IA</h3>
+                <p id="madurez-insight" class="text-sm text-gray-500 mt-1">Comparación de la percepción del área vs. el promedio general de RRHH.</p>
+            </div>
+            <div class="chart-container" style="height: 400px;">
+                <canvas id="madurezChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Section 4: Top Workflows -->
+        <section class="kpi-card mb-8">
+            <div class="card-header">
+                <h3 class="text-lg font-semibold">Top Workflows Solicitados</h3>
+                <div id="workflows-insights-container" class="mt-2 text-sm space-y-2">
+                    <!-- Insights will be populated here -->
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">#</th>
+                            <th scope="col" class="px-6 py-3">Workflow</th>
+                            <th scope="col" class="px-6 py-3 text-center">Votaciones</th>
+                            <th scope="col" class="px-6 py-3 text-center">Dolor (1-5)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="workflows-table-body">
+                        <!-- Table rows will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 5: Open Questions & Needs -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="kpi-card">
+                <div class="card-header">
+                    <h3 class="text-lg font-semibold">Necesidades de Líderes IA</h3>
+                    <p id="lideres-insight" class="text-sm text-gray-500 mt-1"></p>
+                </div>
+                 <div class="chart-container" style="height: 350px;">
+                    <canvas id="lideresChart"></canvas>
+                </div>
+            </div>
+             <div class="kpi-card">
+                <div class="card-header">
+                    <h3 class="text-lg font-semibold">Principal Beneficio Percibido de la IA</h3>
+                    <p id="beneficios-insight" class="text-sm text-gray-500 mt-1"></p>
+                </div>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="beneficiosChart"></canvas>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="card-header">
+                    <h3 class="text-lg font-semibold">Mayor Preocupación o Reto</h3>
+                     <p id="retos-insight" class="text-sm text-gray-500 mt-1"></p>
+                </div>
+                 <div class="chart-container" style="height: 350px;">
+                    <canvas id="retosChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="text-center py-4 bg-white border-t">
+        <p class="text-sm text-gray-500">Dashboard de Adopción de IA para Falabella RRHH - MAIndset© 2025</p>
+    </footer>
+
+    <script>
+    // --- DATA MODEL ---
+    // All data from the document is structured here to power the dashboard.
+    const dashboardData = {
+        global: {
+            title: 'Análisis Global - Perfil de Participantes',
+            kpis: {
+                total: 43,
+                conEquipo: 20, conEquipoPct: '46.5%',
+                sinEquipo: 23, sinEquipoPct: '53.5%',
+                familiaridad: 3.86
+            },
+            distribucion: {
+                labels: ['Atracción de Talento', 'Recursos Humanos', 'Comunicaciones Internas', 'Desarrollo Organizacional'],
+                data: [25, 9, 5, 4]
+            },
+            tiempo: {
+                labels: ['0-25%', '26-50%', '51-75%', '76-100%'],
+                data: [13, 16, 12, 2],
+                insight: 'La mayoría del equipo (37.2%) tiene un balance operativo-estratégico.'
+            },
+            madurez: {
+                labels: ['Comprensión LLM', 'Prompt Engineering', 'Agentes IA', 'Lineamientos Claros', 'Acceso a Herramientas', 'Impulso Directivo', 'Confianza/Curiosidad', 'Miedo al Reemplazo', 'Privacidad/Seguridad', 'Curva Aprendizaje', 'Equipo Receptivo'],
+                data: [3.07, 3.58, 3.86, 3.44, 3.72, 3.58, 4.35, 2.26, 3.40, 4.14, 4.14],
+                insight: 'Comparación de la percepción del área vs. el promedio general de RRHH.'
+            },
+            workflows: {
+                data: [
+                    { rank: 1, name: 'Agendar reuniones coordinando con múltiples asistentes', votes: 31, pain: 3.3 },
+                    { rank: 2, name: 'Redactar respuestas estándar o repetitivas a correos', votes: 30, pain: 3.3 },
+                    { rank: 3, name: 'Buscar info y resumir hallazgos sobre temas nuevos', votes: 30, pain: 3.0 },
+                    { rank: 4, name: 'Crear borradores iniciales de docs (informes, propuestas)', votes: 28, pain: 3.4 },
+                    { rank: 5, name: 'Transcribir y resumir minutas de reuniones', votes: 28, pain: 3.3 },
+                    { rank: 6, name: 'Crear diapositivas para presentaciones', votes: 27, pain: 3.5 },
+                    { rank: 7, name: 'Mejorar la redacción o estilo de textos existentes', votes: 27, pain: 3.3 },
+                    { rank: 8, name: 'Consolidar datos de diversas fuentes en hojas de cálculo', votes: 26, pain: 3.8 },
+                    { rank: 9, name: 'Actualizar reportes periódicos con nuevos datos', votes: 25, pain: 3.7 },
+                    { rank: 10, name: 'Realizar seguimiento de tareas acordadas en reuniones', votes: 25, pain: 3.6 },
+                    { rank: 11, name: 'Clasificar y priorizar correos electrónicos', votes: 24, pain: 3.3 },
+                    { rank: 12, name: 'Generar gráficos simples o visualizaciones a partir de datos', votes: 24, pain: 3.6 },
+                    { rank: 13, name: 'Preparar agendas para reuniones', votes: 24, pain: 3.5 },
+                    { rank: 14, name: 'Identificar tendencias o patrones básicos en conjuntos de datos', votes: 24, pain: 3.0 },
+                    { rank: 15, name: 'Resumir documentos extensos para obtener ideas principales', votes: 23, pain: 2.8 },
+                    { rank: 16, name: 'Extraer tareas o información clave de correos largos', votes: 20, pain: 3.0 },
+                    { rank: 17, name: 'Realizar un primer filtro de CVs basado en criterios definidos', votes: 20, pain: 4.0 },
+                    { rank: 18, name: 'Redactar o actualizar descripciones de puestos de trabajo', votes: 18, pain: 3.1 },
+                    { rank: 19, name: 'Responder preguntas frecuentes de empleados sobre políticas o beneficios', votes: 17, pain: 3.6 },
+                    { rank: 20, name: 'Monitorear noticias o tendencias del sector/competencia', votes: 15, pain: 2.5 }
+                ],
+                insights: [
+                    { title: 'Fuga de Tiempo Administrativo', text: 'Las tareas que más tiempo consumen son las administrativas y de comunicación, como agendar reuniones y redactar correos.' },
+                    { title: 'Puntos de Dolor en Datos', text: 'El mayor nivel de frustración se concentra en tareas manuales de gestión de datos, como consolidar información, actualizar reportes y el primer filtro de CVs.' },
+                    { title: 'Oportunidad Estratégica', text: 'La mejora más impactante se logrará optimizando los flujos que son a la vez muy demandantes en tiempo y tienen un alto "dolor".' }
+                ]
+            },
+            lideres: {
+                labels: [['Herramientas y', 'plataformas IA'], ['Capacitación', 'especializada'], ['Procesos y', 'metodologías'], ['Consultoría', 'externa'], ['Casos de éxito', '/ejemplos']],
+                data: [90, 85, 50, 40, 20],
+                insight: "Líderes priorizan el acceso a herramientas y la capacitación especializada como necesidades críticas."
+            },
+            beneficios: {
+                labels: [['Reducción', 'de tiempo'], ['Eficiencia y', 'productividad'], ['Automatización', 'de tareas'], ['Mejora en', 'análisis'], 'Otros'],
+                data: [59.5, 26.2, 7.1, 2.4, 4.8],
+                insight: "La principal expectativa es la optimización del tiempo y el aumento de la eficiencia operativa."
+            },
+            retos: {
+                labels: [['Privacidad y', 'seguridad'], ['Capacitación/', 'conocimiento'], ['Resistencia', 'al cambio'], ['Calidad y', 'confiabilidad'], ['Sesgos y', 'ética'], ['Pérdida factor', 'humano'], 'Otros'],
+                data: [26.2, 19.0, 14.3, 7.1, 4.8, 2.4, 26.2],
+                insight: "La privacidad de los datos y la necesidad de capacitación son las principales barreras percibidas."
+            }
+        },
+        atraccion: {
+            title: 'Área: Atracción de Talento',
+            kpis: {
+                total: 25,
+                conEquipo: 10, conEquipoPct: '40.0%',
+                sinEquipo: 15, sinEquipoPct: '60.0%',
+                familiaridad: 3.96
+            },
+            tiempo: {
+                labels: ['0-25%', '26-50%', '51-75%', '76-100%'],
+                data: [2, 9, 12, 2],
+                insight: 'Área con mayor carga operativa de todas - 56% dedica más del 50% a tareas operativas.'
+            },
+            madurez: {
+                data: [2.92, 3.24, 3.76, 3.68, 3.64, 3.68, 4.36, 2.48, 3.32, 4.20, 4.40],
+                insight: 'Conocimiento técnico bajo el promedio, pero alta disposición y la mejor percepción del contexto organizacional.'
+            },
+            workflows: {
+                data: [
+                    { rank: 1, name: 'Redactar respuestas estándar o repetitivas a correos', votes: 22, pain: 3.6 },
+                    { rank: 2, name: 'Realizar un primer filtro de CVs basado en criterios definidos', votes: 20, pain: 4.0 },
+                    { rank: 3, name: 'Transcribir y resumir minutas de reuniones', votes: 18, pain: 3.4 },
+                    { rank: 4, name: 'Agendar reuniones coordinando con múltiples asistentes', votes: 18, pain: 3.6 },
+                    { rank: 5, name: 'Redactar o actualizar descripciones de puestos de trabajo', votes: 16, pain: 3.1 },
+                    { rank: 6, name: 'Buscar info y resumir hallazgos sobre temas nuevos', votes: 16, pain: 3.0 },
+                    { rank: 7, name: 'Clasificar y priorizar correos electrónicos', votes: 16, pain: 3.4 },
+                    { rank: 8, name: 'Actualizar reportes periódicos con nuevos datos', votes: 15, pain: 3.5 },
+                    { rank: 9, name: 'Crear borradores iniciales de docs (informes, propuestas)', votes: 15, pain: 3.5 },
+                    { rank: 10, name: 'Preparar agendas para reuniones', votes: 14, pain: 3.7 },
+                    { rank: 11, name: 'Mejorar la redacción o estilo de textos existentes', votes: 14, pain: 3.5 },
+                    { rank: 12, name: 'Realizar seguimiento de tareas acordadas en reuniones', votes: 13, pain: 3.8 },
+                    { rank: 13, name: 'Consolidar datos de diversas fuentes en hojas de cálculo', votes: 13, pain: 3.6 },
+                    { rank: 14, name: 'Resumir documentos extensos para obtener ideas principales', votes: 12, pain: 2.8 },
+                    { rank: 15, name: 'Responder preguntas frecuentes de empleados sobre políticas o beneficios', votes: 12, pain: 3.6 },
+                    { rank: 16, name: 'Identificar tendencias o patrones básicos en conjuntos de datos', votes: 12, pain: 2.5 },
+                    { rank: 17, name: 'Extraer tareas o información clave de correos largos', votes: 12, pain: 3.4 },
+                    { rank: 18, name: 'Crear diapositivas para presentaciones a partir de notas o documentos', votes: 11, pain: 3.1 },
+                    { rank: 19, name: 'Generar gráficos simples o visualizaciones a partir de datos', votes: 8, pain: 3.4 },
+                    { rank: 20, name: 'Monitorear noticias o tendencias del sector/competencia', votes: 7, pain: 2.7 }
+                ],
+                insights: [
+                    { title: 'Dolor Crítico: Filtro de CVs', text: 'El primer filtro de CVs es el workflow más problemático, siendo el 2° más votado en tiempo y el N°1 en dolor (4.0).' },
+                    { title: 'Comunicación Consume Tiempo', text: 'La tarea más votada es redactar respuestas a correos (22 votos), indicando una oportunidad clara para automatización.' },
+                    { title: 'Carga en Gestión de Reuniones', text: 'El ciclo de coordinación y seguimiento de reuniones es un punto de fricción importante.' }
+                ]
+            },
+            lideres: {
+                labels: [['Herramientas', 'tecnológicas'], ['Capacitación', 'especializada'], ['Procesos y', 'metodologías'], ['Consultoría', 'externa'], 'Casos de éxito'],
+                data: [90, 80, 50, 40, 20],
+                insight: "La necesidad de herramientas y capacitación es crítica para el área."
+            },
+            beneficios: {
+                labels: [['Reducción', 'de tiempo'], ['Eficiencia', 'operativa'], ['Mejor análisis', 'de candidatos']],
+                data: [62.5, 29.2, 8.3],
+                insight: "El principal beneficio esperado es reducir el tiempo en tareas administrativas como el filtrado de CVs."
+            },
+            retos: {
+                labels: [['Privacidad datos', 'candidatos'], ['Capacitación', 'del equipo'], ['Resistencia', 'al cambio'], ['Pérdida factor', 'humano'], ['Sesgos en', 'evaluación']],
+                data: [33.3, 25.0, 16.7, 12.5, 12.5],
+                insight: "La privacidad de los datos sensibles de los candidatos es la mayor preocupación (33.3%)."
+            }
+        },
+        rrhh: {
+            title: 'Área: Recursos Humanos',
+            kpis: {
+                total: 9,
+                conEquipo: 8, conEquipoPct: '88.9%',
+                sinEquipo: 1, sinEquipoPct: '11.1%',
+                familiaridad: 3.67
+            },
+            tiempo: {
+                labels: ['0-25%', '26-50%', '51-75%', '76-100%'],
+                data: [7, 2, 0, 0],
+                insight: 'Área más estratégica (77.8% dedica menos del 25% a tareas operativas).'
+            },
+            madurez: {
+                data: [3.33, 4.00, 4.00, 2.67, 3.67, 3.33, 4.44, 1.44, 3.44, 4.22, 3.89],
+                insight: 'El área con mayor conocimiento técnico, pero con la percepción más baja del contexto organizacional (falta de lineamientos claros).'
+            },
+            workflows: {
+                data: [
+                    { rank: 1, name: 'Generar gráficos simples o visualizaciones a partir de datos', votes: 7, pain: 3.4 },
+                    { rank: 2, name: 'Mejorar la redacción o estilo de textos existentes', votes: 7, pain: 3.0 },
+                    { rank: 3, name: 'Crear diapositivas para presentaciones a partir de notas o documentos', votes: 7, pain: 3.7 },
+                    { rank: 4, name: 'Buscar info y resumir hallazgos sobre temas nuevos o específicos', votes: 6, pain: 3.3 },
+                    { rank: 5, name: 'Realizar seguimiento de tareas acordadas en reuniones', votes: 6, pain: 3.3 },
+                    { rank: 6, name: 'Redactar respuestas estándar o repetitivas a correos', votes: 6, pain: 2.3 },
+                    { rank: 7, name: 'Identificar tendencias o patrones básicos en conjuntos de datos', votes: 6, pain: 3.2 },
+                    { rank: 8, name: 'Resumir documentos extensos para obtener ideas principales', votes: 5, pain: 3.2 },
+                    { rank: 9, name: 'Agendar reuniones coordinando con múltiples asistentes', votes: 5, pain: 2.4 },
+                    { rank: 10, name: 'Consolidar datos de diversas fuentes en hojas de cálculo', votes: 5, pain: 3.8 },
+                    { rank: 11, name: 'Crear borradores iniciales de documentos (informes, propuestas)', votes: 5, pain: 3.4 },
+                    { rank: 12, name: 'Extraer tareas o información clave de correos largos', votes: 4, pain: 2.5 },
+                    { rank: 13, name: 'Responder preguntas frecuentes de empleados sobre políticas o beneficios', votes: 3, pain: 4.3 },
+                    { rank: 14, name: 'Preparar agendas para reuniones', votes: 3, pain: 3.0 },
+                    { rank: 15, name: 'Actualizar reportes periódicos con nuevos datos', votes: 3, pain: 3.7 },
+                    { rank: 16, name: 'Transcribir y resumir minutas de reuniones', votes: 2, pain: 2.5 },
+                    { rank: 17, name: 'Monitorear noticias o tendencias del sector/competencia', votes: 2, pain: 2.0 },
+                    { rank: 18, name: 'Redactar o actualizar descripciones de puestos de trabajo', votes: 2, pain: 3.0 },
+                    { rank: 19, name: 'Resumir hilos de correos extensos', votes: 1, pain: 3.0 },
+                    { rank: 20, name: 'Clasificar y priorizar correos electrónicos', votes: 1, pain: 3.0 }
+                ],
+                insights: [
+                    { title: 'Foco en Reportes y Presentaciones', text: 'Las tareas que más tiempo consumen son las relacionadas con la comunicación de resultados: generar gráficos y crear diapositivas.' },
+                    { title: 'Dolor en Complejidad', text: 'La mayor frustración proviene de tareas que exigen análisis, como "Responder preguntas frecuentes de empleados" (dolor 4.3).' }
+                ]
+            },
+            lideres: {
+                labels: [['Herramientas', 'tecnológicas'], ['Capacitación', 'para equipo'], ['Procesos', 'claros'], ['Consultoría', 'externa'], ['Aspectos éticos', '/normativos']],
+                data: [100, 87.5, 50, 37.5, 25],
+                insight: "El 100% de los líderes del área demanda herramientas tecnológicas para sus equipos."
+            },
+            beneficios: {
+                labels: [['Tiempo para', 'lo estratégico'], ['Eficiencia en', 'análisis'], ['Mejora en', 'decisiones']],
+                data: [55.6, 33.3, 11.1],
+                insight: "Buscan liberar tiempo de tareas operativas para enfocarse en la estrategia del negocio."
+            },
+            retos: {
+                labels: [['Falta de', 'sponsorship'], ['Aspectos', 'éticos/sesgos'], ['Integración', 'sistemas'], ['Dependencia', 'tecnológica'], ['Privacidad', 'empleados']],
+                data: [33.3, 22.2, 22.2, 11.1, 11.1],
+                insight: "La principal preocupación es la falta de compromiso y apoyo de los líderes de negocio."
+            }
+        },
+        comunicaciones: {
+            title: 'Área: Comunicaciones Internas',
+            kpis: {
+                total: 5,
+                conEquipo: 1, conEquipoPct: '20.0%',
+                sinEquipo: 4, sinEquipoPct: '80.0%',
+                familiaridad: 4.00
+            },
+            tiempo: {
+                labels: ['0-25%', '26-50%', '51-75%', '76-100%'],
+                data: [2, 3, 0, 0],
+                insight: 'Área con carga operativa balanceada, la mayoría en el rango medio (60%).'
+            },
+            madurez: {
+                data: [2.60, 4.20, 4.20, 3.40, 3.80, 3.20, 4.40, 2.60, 3.20, 4.20, 3.40],
+                insight: 'La más familiar con IA. Excelente dominio en Prompting, pero brecha en comprensión de LLMs y baja receptividad del equipo.'
+            },
+            workflows: {
+                data: [
+                    { rank: 1, name: 'Actualizar reportes periódicos con nuevos datos', votes: 5, pain: 3.0 },
+                    { rank: 2, name: 'Generar gráficos simples o visualizaciones a partir de datos', votes: 5, pain: 2.8 },
+                    { rank: 3, name: 'Consolidar datos de diversas fuentes en hojas de cálculo', votes: 5, pain: 2.8 },
+                    { rank: 4, name: 'Crear diapositivas para presentaciones a partir de notas o documentos', votes: 5, pain: 2.8 },
+                    { rank: 5, name: 'Buscar info y resumir hallazgos sobre temas nuevos o específicos', votes: 4, pain: 1.8 },
+                    { rank: 6, name: 'Mejorar la redacción o estilo de textos existentes', votes: 4, pain: 2.3 },
+                    { rank: 7, name: 'Agendar reuniones coordinando con múltiples asistentes', votes: 4, pain: 2.0 },
+                    { rank: 8, name: 'Crear borradores iniciales de documentos (informes, propuestas)', votes: 4, pain: 2.5 },
+                    { rank: 9, name: 'Monitorear noticias o tendencias del sector/competencia', votes: 4, pain: 1.8 },
+                    { rank: 10, name: 'Transcribir y resumir minutas de reuniones', votes: 4, pain: 1.8 },
+                    { rank: 11, name: 'Clasificar y priorizar correos electrónicos', votes: 4, pain: 2.3 },
+                    { rank: 12, name: 'Preparar agendas para reuniones', votes: 3, pain: 2.7 },
+                    { rank: 13, name: 'Resumir hilos de correos extensos', votes: 3, pain: 2.3 },
+                    { rank: 14, name: 'Resumir documentos extensos para obtener ideas principales', votes: 3, pain: 1.7 },
+                    { rank: 15, name: 'Identificar tendencias o patrones básicos en conjuntos de datos', votes: 3, pain: 3.0 },
+                    { rank: 16, name: 'Redactar respuestas estándar o repetitivas a correos', votes: 2, pain: 2.0 },
+                    { rank: 17, name: 'Realizar seguimiento de tareas acordadas en reuniones', votes: 2, pain: 3.5 },
+                    { rank: 18, name: 'Responder preguntas frecuentes de empleados sobre políticas o beneficios', votes: 2, pain: 2.0 },
+                    { rank: 19, name: 'Extraer tareas o información clave de correos largos', votes: 2, pain: 1.5 }
+                ],
+                insights: [
+                    { title: 'Foco en Producción de Contenido', text: 'El trabajo está dominado por el ciclo de transformar datos en comunicaciones (reportes, gráficos, diapositivas).' },
+                    { title: 'Reto de Volumen, no Dificultad', text: 'Las tareas más demandantes tienen un nivel de dolor bajo, sugiriendo que el desafío es el gran volumen y la repetición.' }
+                ]
+            },
+            lideres: {
+                labels: [['Herramientas', 'robustas']],
+                data: [100],
+                insight: "La única respuesta de líder en el área apunta a la necesidad de herramientas robustas."
+            },
+            beneficios: {
+                labels: [['Creatividad y', 'calidad'], ['Velocidad de', 'producción']],
+                data: [60, 40],
+                insight: "El foco está en potenciar la creatividad y la calidad del contenido (60%)."
+            },
+            retos: {
+                labels: [['Pérdida de voz', 'corporativa'], ['Contenido', 'genérico'], 'Desinformación'],
+                data: [40, 40, 20],
+                insight: "La mayor preocupación es perder la identidad y autenticidad de la marca en las comunicaciones."
+            }
+        },
+        desarrollo: {
+            title: 'Área: Desarrollo Organizacional',
+            kpis: {
+                total: 4,
+                conEquipo: 1, conEquipoPct: '25.0%',
+                sinEquipo: 3, sinEquipoPct: '75.0%',
+                familiaridad: 3.50
+            },
+            tiempo: {
+                labels: ['0-25%', '26-50%', '51-75%', '76-100%'],
+                data: [2, 2, 0, 0],
+                insight: 'Área estratégica con baja carga operativa, balance 50/50.'
+            },
+            madurez: {
+                data: [4.00, 4.00, 3.75, 3.75, 4.25, 4.00, 4.00, 2.25, 4.00, 3.50, 4.00],
+                insight: 'El área con la mejor percepción del contexto organizacional y el 2° más alto conocimiento técnico, pero con la percepción más baja sobre la curva de aprendizaje.'
+            },
+            workflows: {
+                data: [
+                    { rank: 1, name: 'Realizar seguimiento de tareas acordadas en reuniones', votes: 4, pain: 3.0 },
+                    { rank: 2, name: 'Generar gráficos simples o visualizaciones a partir de datos', votes: 4, pain: 4.0 },
+                    { rank: 3, name: 'Transcribir y resumir minutas de reuniones', votes: 4, pain: 3.3 },
+                    { rank: 4, name: 'Agendar reuniones coordinando con múltiples asistentes', votes: 4, pain: 3.0 },
+                    { rank: 5, name: 'Preparar agendas para reuniones', votes: 4, pain: 3.0 },
+                    { rank: 6, name: 'Buscar info y resumir hallazgos sobre temas nuevos o específicos', votes: 4, pain: 2.8 },
+                    { rank: 7, name: 'Crear borradores iniciales de documentos (informes, propuestas)', votes: 4, pain: 3.3 },
+                    { rank: 8, name: 'Crear diapositivas para presentaciones a partir de notas o documentos', votes: 4, pain: 3.8 },
+                    { rank: 9, name: 'Resumir documentos extensos para obtener ideas principales', votes: 3, pain: 2.7 },
+                    { rank: 10, name: 'Consolidar datos de diversas fuentes en hojas de cálculo', votes: 3, pain: 4.7 },
+                    { rank: 11, name: 'Identificar tendencias o patrones básicos en conjuntos de datos', votes: 3, pain: 3.7 },
+                    { rank: 12, name: 'Clasificar y priorizar correos electrónicos', votes: 3, pain: 3.0 },
+                    { rank: 13, name: 'Monitorear noticias o tendencias del sector/competencia', votes: 2, pain: 2.0 },
+                    { rank: 14, name: 'Mejorar la redacción o estilo de textos existentes', votes: 2, pain: 3.5 },
+                    { rank: 15, name: 'Actualizar reportes periódicos con nuevos datos', votes: 2, pain: 4.0 },
+                    { rank: 16, name: 'Extraer tareas o información clave de correos largos', votes: 2, pain: 2.0 }
+                ],
+                insights: [
+                    { title: 'Dolor Extremo en Datos', text: '"Consolidar datos de diversas fuentes" es el punto más crítico y doloroso (4.7), un obstáculo técnico clave.' },
+                    { title: 'Carga de Trabajo Fragmentada', text: 'El tiempo se divide entre 8 workflows distintos, desde gestión de reuniones hasta creación de presentaciones.' }
+                ]
+            },
+            lideres: {
+                labels: [['Procesos y', 'metodologías']],
+                data: [100],
+                insight: "El foco principal está en definir procesos claros para la gestión del cambio."
+            },
+            beneficios: {
+                labels: [['Análisis', 'predictivo'], ['Diseño basado', 'en datos'], 'Personalización'],
+                data: [50, 25, 25],
+                insight: "El mayor interés está en el uso de IA para el análisis predictivo de tendencias organizacionales."
+            },
+            retos: {
+                labels: [['Privacidad datos', 'sensibles'], ['Complejidad', 'implementación'], ['ROI difícil', 'de medir']],
+                data: [50, 25, 25],
+                insight: "La privacidad de datos sensibles de desarrollo y evaluaciones es la principal preocupación (50%)."
+            }
+        }
+    };
+    
+    // --- CHART INSTANCES & CONFIGS ---
+    let distribucionChart, tiempoOperativoChart, madurezChart, lideresChart, beneficiosChart, retosChart;
+
+    const chartColors = {
+        blue: '#3b82f6',
+        sky: '#0ea5e9',
+        teal: '#14b8a6',
+        emerald: '#10b981',
+        rose: '#f43f5e',
+        orange: '#f97316',
+        purple: '#a855f7',
+        yellow: '#eab308'
+    };
+    
+    // Global chart options
+    Chart.defaults.font.family = 'Inter';
+    Chart.defaults.plugins.legend.position = 'bottom';
+    
+    /**
+     * Creates or updates a pie/doughnut chart.
+     */
+    function renderPieDoughnutChart(ctx, chartInstance, type, labels, data, chartColorsArray) {
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+        return new Chart(ctx, {
+            type: type,
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Participantes',
+                    data: data,
+                    backgroundColor: chartColorsArray,
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 20
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Creates or updates a radar chart.
+     */
+    function renderRadarChart(ctx, chartInstance, labels, areaData, globalData, areaLabel, globalLabel) {
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+        
+        const datasets = [{
+            label: globalLabel,
+            data: globalData,
+            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+            borderColor: 'rgba(59, 130, 246, 1)',
+            pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgba(59, 130, 246, 1)',
+            borderWidth: 2
+        }];
+        
+        if (areaData) {
+            datasets.unshift({ // Add area data first to render it on top
+                label: areaLabel,
+                data: areaData,
+                backgroundColor: 'rgba(20, 184, 166, 0.2)',
+                borderColor: 'rgba(20, 184, 166, 1)',
+                pointBackgroundColor: 'rgba(20, 184, 166, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(20, 184, 166, 1)',
+                borderWidth: 2
+            });
+        }
+
+        return new Chart(ctx, {
+            type: 'radar',
+            data: { labels, datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { display: true },
+                        suggestedMin: 0,
+                        suggestedMax: 5,
+                        pointLabels: {
+                            font: { size: 10 }
+                        },
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Creates or updates a horizontal bar chart.
+     */
+    function renderHorizontalBarChart(ctx, chartInstance, labels, data, dataLabel, backgroundColor) {
+         if (chartInstance) {
+            chartInstance.destroy();
+        }
+        return new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: dataLabel,
+                    data: data,
+                    backgroundColor: backgroundColor,
+                    borderColor: backgroundColor,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) { return value + '%' }
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Populates the workflows table with data.
+     */
+    function populateWorkflowsTable(workflowsData) {
+        const tableBody = document.getElementById('workflows-table-body');
+        tableBody.innerHTML = ''; // Clear previous data
+        const maxVotes = Math.max(...workflowsData.map(w => w.votes), 0);
+        
+        workflowsData.forEach(workflow => {
+            const painColor = workflow.pain >= 4.0 ? 'bg-red-500' : workflow.pain >= 3.5 ? 'bg-yellow-500' : 'bg-green-500';
+            const votePercentage = (maxVotes > 0) ? (workflow.votes / maxVotes) * 100 : 0;
+
+            const row = `
+                <tr class="bg-white border-b hover:bg-gray-50">
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${workflow.rank}</th>
+                    <td class="px-6 py-4">${workflow.name}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center justify-between">
+                            <span class="mr-2 font-medium">${workflow.votes}</span>
+                            <div class="w-2/3 bg-gray-200 rounded-full h-2.5">
+                                <div class="table-bar h-2.5 rounded-full" style="width: ${votePercentage}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="text-white text-xs font-medium px-2.5 py-0.5 rounded-full ${painColor}">${workflow.pain.toFixed(1)}</span>
+                    </td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        });
+    }
+
+    /**
+     * Updates all dashboard components based on the selected filter.
+     */
+    function updateDashboard(filterValue = 'global') {
+        const data = dashboardData[filterValue];
+        const globalData = dashboardData.global;
+        
+        // 1. Update KPIs
+        document.getElementById('kpi-title').textContent = data.title;
+        document.getElementById('kpi-total').textContent = data.kpis.total;
+        document.getElementById('kpi-con-equipo').textContent = data.kpis.conEquipo;
+        document.getElementById('kpi-con-equipo-pct').textContent = `(${data.kpis.conEquipoPct})`;
+        document.getElementById('kpi-sin-equipo').textContent = data.kpis.sinEquipo;
+        document.getElementById('kpi-sin-equipo-pct').textContent = `(${data.kpis.sinEquipoPct})`;
+        document.getElementById('kpi-familiaridad').innerHTML = `${data.kpis.familiaridad.toFixed(2)}<span class="text-2xl text-gray-400">/5</span>`;
+
+        // 2. Update Distribution Chart (Pie)
+        const distribucionContainer = document.getElementById('distribucion-container');
+        if (filterValue === 'global') {
+            distribucionContainer.style.display = 'block';
+            distribucionChart = renderPieDoughnutChart(
+                document.getElementById('distribucionChart').getContext('2d'),
+                distribucionChart,
+                'pie',
+                data.distribucion.labels,
+                data.distribucion.data,
+                [chartColors.blue, chartColors.sky, chartColors.teal, chartColors.emerald]
+            );
+        } else {
+            distribucionContainer.style.display = 'none';
+        }
+        
+        // 3. Update Tiempo Operativo Chart (Doughnut)
+        document.getElementById('tiempo-title').textContent = `Distribución de Tiempo en Tareas Operativas (${data.title.replace('Área: ','')})`;
+        document.getElementById('tiempo-insight').textContent = data.tiempo.insight;
+        tiempoOperativoChart = renderPieDoughnutChart(
+            document.getElementById('tiempoOperativoChart').getContext('2d'),
+            tiempoOperativoChart,
+            'doughnut',
+            data.tiempo.labels,
+            data.tiempo.data,
+            [chartColors.blue, chartColors.sky, chartColors.yellow, chartColors.orange]
+        );
+        
+        // 4. Update Madurez Chart (Radar)
+        document.getElementById('madurez-insight').textContent = data.madurez.insight;
+        madurezChart = renderRadarChart(
+            document.getElementById('madurezChart').getContext('2d'),
+            madurezChart,
+            globalData.madurez.labels,
+            filterValue !== 'global' ? data.madurez.data : null, // Only pass area data if not global
+            globalData.madurez.data,
+            filterValue !== 'global' ? data.title.replace('Área: ','') : 'Global',
+            'Promedio Global'
+        );
+        
+        // 5. Update Workflows Table and Insights
+        populateWorkflowsTable(data.workflows.data);
+        const insightsContainer = document.getElementById('workflows-insights-container');
+        insightsContainer.innerHTML = data.workflows.insights.map(insight => 
+            `<p><strong class="text-gray-700">${insight.title}:</strong> ${insight.text}</p>`
+        ).join('');
+
+        // 6. Update Leaders Needs Chart
+        document.getElementById('lideres-insight').textContent = data.lideres.insight;
+        lideresChart = renderHorizontalBarChart(
+            document.getElementById('lideresChart').getContext('2d'),
+            lideresChart,
+            data.lideres.labels,
+            data.lideres.data,
+            '% de Menciones',
+            'rgba(59, 130, 246, 0.7)'
+        );
+
+        // 7. Update Open Questions Charts
+        document.getElementById('beneficios-insight').textContent = data.beneficios.insight;
+        beneficiosChart = renderHorizontalBarChart(
+            document.getElementById('beneficiosChart').getContext('2d'),
+            beneficiosChart,
+            data.beneficios.labels,
+            data.beneficios.data,
+            '% de Menciones',
+            'rgba(16, 185, 129, 0.7)'
+        );
+        
+        document.getElementById('retos-insight').textContent = data.retos.insight;
+        retosChart = renderHorizontalBarChart(
+            document.getElementById('retosChart').getContext('2d'),
+            retosChart,
+            data.retos.labels,
+            data.retos.data,
+            '% de Menciones',
+            'rgba(244, 63, 94, 0.7)'
+        );
+
+    }
+
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const filter = document.getElementById('areaFilter');
+        filter.addEventListener('change', (e) => {
+            updateDashboard(e.target.value);
+        });
+
+        // Initial load
+        updateDashboard('global');
+    });
+
+    </script>
+</body>
+</html>

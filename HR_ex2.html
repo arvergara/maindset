@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      IA Generativa en RRHH para Grandes Empresas - Casos de Uso Interactivos
+    </title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Roboto", sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f7f6;
+        color: #333;
+      }
+      .container {
+        width: 90%;
+        margin: auto;
+        overflow: hidden;
+        padding: 20px 0;
+      }
+      header {
+        background: #0056b3;
+        color: #fff;
+        padding-top: 30px;
+        min-height: 70px;
+        border-bottom: #072f5f 3px solid;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      header h1 {
+        margin: 0;
+        padding-bottom: 10px;
+      }
+      header p {
+        margin-top: 0;
+        font-size: 1.1em;
+      }
+      .section-title {
+        text-align: center;
+        margin-top: 30px;
+        margin-bottom: 20px;
+        color: #0056b3;
+        font-size: 2em;
+      }
+
+      /* Estilo para los casos de uso colapsables */
+      .use-case {
+        background: #fff;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        overflow: hidden; /* Para manejar el contenido oculto */
+      }
+
+      .use-case-header {
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        cursor: pointer; /* Indica que es clickeable */
+        background-color: #e9ecef;
+        border-bottom: 1px solid #ddd;
+        transition: background-color 0.3s ease;
+      }
+
+      .use-case-header:hover {
+        background-color: #dcdfe3;
+      }
+
+      .use-case-header .icon {
+        font-size: 2.5em;
+        color: #007bff;
+        flex-shrink: 0;
+      }
+
+      .use-case-header .title h3 {
+        margin: 0;
+        color: #0056b3;
+        font-size: 1.3em;
+      }
+      .use-case-header .title p {
+        margin: 5px 0 0 0;
+        font-size: 0.95em;
+        color: #555;
+      }
+
+      .use-case-details {
+        padding: 20px;
+        border-top: 1px solid #eee;
+        display: none; /* Inicialmente oculto */
+        background-color: #f9f9f9;
+      }
+
+      .use-case-details h4 {
+        color: #007bff;
+        margin-top: 0;
+        margin-bottom: 15px;
+        border-bottom: 1px dashed #ccc;
+        padding-bottom: 5px;
+      }
+      .use-case-details p {
+        margin-bottom: 10px;
+      }
+      .use-case-details strong {
+        color: #0056b3;
+      }
+
+      /* Estilos para visualizaciones dummy */
+      .dummy-data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 15px;
+      }
+      .dummy-data-table th,
+      .dummy-data-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+        font-size: 0.9em;
+      }
+      .dummy-data-table th {
+        background-color: #007bff;
+        color: white;
+        font-weight: normal;
+      }
+      .dummy-data-table tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      .dummy-chart-bar {
+        display: flex;
+        align-items: flex-end;
+        height: 120px; /* Increased height for better labels */
+        background-color: #eee;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        justify-content: space-around;
+        position: relative; /* Needed for labels */
+      }
+      .dummy-chart-bar::after {
+        /* Simple Y-axis baseline */
+        content: "";
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        border-bottom: 1px solid #999;
+      }
+      .dummy-chart-bar div {
+        width: 18%; /* Adjusted width */
+        background-color: #28a745;
+        margin: 0 1%; /* Adjusted margin */
+        color: white;
+        text-align: center;
+        font-size: 0.8em;
+        padding-top: 5px;
+        position: relative;
+        z-index: 1; /* Ensure bars are above baseline */
+        display: flex;
+        flex-direction: column-reverse; /* Put label below bar */
+        align-items: center;
+      }
+      .dummy-chart-bar div span {
+        display: block;
+        margin-top: 5px;
+        color: #333;
+        font-size: 0.7em;
+        font-weight: bold;
+        position: absolute;
+        bottom: -20px; /* Position label below */
+      }
+      .dummy-chart-bar .bar1 {
+        height: 60%;
+        background-color: #007bff;
+      } /* Candidate Fit */
+      .dummy-chart-bar .bar2 {
+        height: 85%;
+        background-color: #28a745;
+      } /* Success Prob */
+      .dummy-chart-bar .bar3 {
+        height: 40%;
+        background-color: #ffc107;
+      } /* Turnover Risk (higher = more risk) */
+      .dummy-chart-bar .bar4 {
+        height: 10%;
+        background-color: #ffc107;
+      } /* Turnover Risk (lower = less risk) */
+
+      .dummy-chat {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 15px;
+        background-color: #fff;
+        max-height: 250px; /* Increased height */
+        overflow-y: auto;
+        margin-bottom: 15px;
+      }
+      .dummy-chat .message {
+        margin-bottom: 10px;
+        padding: 8px 12px;
+        border-radius: 5px;
+        max-width: 85%; /* Increased max width */
+        word-wrap: break-word; /* Ensure long words wrap */
+      }
+      .dummy-chat .user {
+        background-color: #007bff;
+        color: white;
+        margin-left: auto;
+        text-align: right;
+      }
+      .dummy-chat .ai {
+        background-color: #e9ecef;
+        margin-right: auto;
+        text-align: left;
+      }
+      .dummy-chat .ai strong {
+        color: #0056b3;
+      }
+
+      .dummy-comparison {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 15px;
+        flex-wrap: wrap; /* Allow wrapping on smaller screens */
+      }
+      .dummy-comparison > div {
+        /* Direct children */
+        flex: 1;
+        min-width: 280px; /* Minimum width before wrapping */
+        border: 1px dashed #ccc;
+        padding: 15px;
+        border-radius: 5px;
+        background-color: #fff;
+      }
+      .dummy-comparison h5 {
+        margin-top: 0;
+        color: #0056b3;
+        text-align: center;
+      }
+      .dummy-comparison ul {
+        padding-left: 20px;
+      }
+
+      .dummy-workflow {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+      }
+      .dummy-workflow .step {
+        text-align: center;
+        flex: 1;
+        min-width: 100px;
+        margin: 10px;
+      }
+      .dummy-workflow .step .icon {
+        font-size: 2em;
+        color: #28a745; /* Green for automated step */
+      }
+      .dummy-workflow .step .manual-icon {
+        color: #ffc107; /* Orange for manual review */
+      }
+      .dummy-workflow .step p {
+        font-size: 0.8em;
+        margin-top: 5px;
+        color: #555;
+      }
+      .dummy-workflow .arrow {
+        font-size: 1.5em;
+        color: #555;
+        margin: 0 10px;
+      }
+      @media (max-width: 600px) {
+        .dummy-workflow {
+          flex-direction: column;
+        }
+        .dummy-workflow .arrow {
+          transform: rotate(90deg);
+          margin: 10px 0;
+        }
+      }
+
+      .benefits,
+      .challenges,
+      .context {
+        background: #e9ecef;
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .benefits h2,
+      .challenges h2,
+      .context h2 {
+        color: #0056b3;
+        text-align: center;
+        margin-top: 0;
+      }
+      .benefits ul,
+      .challenges ul,
+      .context ul {
+        list-style: none;
+        padding: 0;
+      }
+      .benefits li,
+      .challenges li,
+      .context li {
+        background: #fff;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        border-left: #007bff 5px solid;
+      }
+
+      footer {
+        text-align: center;
+        padding: 20px;
+        margin-top: 40px;
+        background: #0056b3;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1>IA Generativa en RRHH para Grandes Empresas</h1>
+        <p>
+          Descubre los principales casos de uso y cómo la IA está transformando
+          la gestión del talento.
+        </p>
+      </div>
+    </header>
+
+    <div class="container">
+      <h2 class="section-title">
+        Principales Casos de Uso (Haz clic para ver el ejemplo)
+      </h2>
+
+      <div class="use-case">
+        <div class="use-case-header">
+          <div class="icon">🔍</div>
+          <div class="title">
+            <h3>Atracción y Selección de Talento</h3>
+            <p>
+              Identificación de candidatos ideales, predicción de rotación y
+              optimización de descripciones de puestos.
+            </p>
+          </div>
+        </div>
+        <div class="use-case-details">
+          <h4>Ejemplo: Selección Predictiva y Predicción de Rotación</h4>
+          <p>
+            La IA analiza perfiles y datos internos para predecir la idoneidad
+            del candidato y el riesgo de abandono, optimizando la contratación.
+          </p>
+          <div class="dummy-chart-bar">
+            <div class="bar1" style="height: 75px">
+              85%<span>Ajuste Candidato</span>
+            </div>
+            <div class="bar2" style="height: 90px">
+              92%<span>Prob. Éxito</span>
+            </div>
+            <div class="bar3" style="height: 45px; background-color: #ffc107">
+              18%<span>Riesgo Rotación (Empleado A)</span>
+            </div>
+            <div class="bar4" style="height: 20px; background-color: #28a745">
+              5%<span>Riesgo Rotación (Empleado B)</span>
+            </div>
+          </div>
+          <table class="dummy-data-table">
+            <thead>
+              <tr>
+                <th>Candidato/Empleado</th>
+                <th>Puntuación Ajuste Cultural</th>
+                <th>Probabilidad de Éxito a 1 Año</th>
+                <th>Riesgo de Rotación (Empleados)</th>
+                <th>Acción Sugerida (IA)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Ana R. (Candidata)</td>
+                <td>Alto (4.8/5)</td>
+                <td>91%</td>
+                <td>N/A</td>
+                <td>Priorizar Entrevista</td>
+              </tr>
+              <tr>
+                <td>Luis M. (Candidato)</td>
+                <td>Medio (3.5/5)</td>
+                <td>78%</td>
+                <td>N/A</td>
+                <td>Considerar, revisar soft skills</td>
+              </tr>
+              <tr>
+                <td>Sofía P. (Empleado Actual)</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>Alto (19%)</td>
+                <td>Alertar a manager, revisar compromiso</td>
+              </tr>
+              <tr>
+                <td>Javier G. (Empleado Actual)</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>Bajo (4%)</td>
+                <td>Mantener seguimiento habitual</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            La IA generativa puede crear descripciones de puestos optimizadas en
+            minutos, atrayendo mejores candidatos y reduciendo el tiempo de
+            redacción en un 59%.
+          </p>
+        </div>
+      </div>
+
+      <div class="use-case">
+        <div class="use-case-header">
+          <div class="icon">📚</div>
+          <div class="title">
+            <h3>Desarrollo y Aprendizaje</h3>
+            <p>
+              Creación de itinerarios formativos personalizados y materiales de
+              capacitación ágiles y relevantes.
+            </p>
+          </div>
+        </div>
+        <div class="use-case-details">
+          <h4>Ejemplo: Itinerario de Aprendizaje Personalizado por IA</h4>
+          <p>
+            Basado en la evaluación de habilidades, el rol actual y las
+            aspiraciones del empleado, la IA recomienda rutas de desarrollo y
+            genera contenido de apoyo.
+          </p>
+          <div class="dummy-comparison">
+            <div>
+              <h5>Perfil y Habilidades (Dummy)</h5>
+              <p><strong>Nombre:</strong> Carolina Silva</p>
+              <p><strong>Puesto:</strong> Analista de Marketing Digital</p>
+              <p><strong>Habilidades Evaluadas:</strong></p>
+              <ul>
+                <li>SEO: Avanzado</li>
+                <li>SEM: Intermedio</li>
+                <li>Análisis Web: Básico</li>
+                <li>Copywriting: Avanzado</li>
+              </ul>
+              <p>
+                <strong>Intereses/Rol Futuro:</strong> Especialista en Análisis
+                de Datos de Marketing.
+              </p>
+            </div>
+            <div>
+              <h5>Ruta de Desarrollo Recomendada por IA (Dummy)</h5>
+              <p>
+                <strong>Objetivo:</strong> Cerrar brecha en Análisis Web para
+                rol futuro.
+              </p>
+              <ul>
+                <li>
+                  <strong>Curso Online:</strong> "Google Analytics 4: De Cero a
+                  Experto" (Certificación)
+                </li>
+                <li>
+                  <strong>Workshop Interno:</strong> "Introducción a
+                  Herramientas de Visualización de Datos (Power BI/Tableau)"
+                </li>
+                <li>
+                  <strong>Proyecto Sugerido:</strong> Análisis del funnel de
+                  conversión de la web corporativa.
+                </li>
+                <li>
+                  <strong>Mentoria:</strong> Con un Analista Senior del equipo.
+                </li>
+              </ul>
+              <p>
+                La IA también puede generar resúmenes o ejercicios prácticos
+                para cada módulo de formación.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="use-case">
+        <div class="use-case-header">
+          <div class="icon">📈</div>
+          <div class="title">
+            <h3>Gestión del Desempeño</h3>
+            <p>
+              Evaluaciones más objetivas y análisis basado en datos para
+              identificar tendencias y mejorar el rendimiento individual y de
+              equipo.
+            </p>
+          </div>
+        </div>
+        <div class="use-case-details">
+          <h4>Ejemplo: Informe de Desempeño Asistido por IA (Dummy)</h4>
+          <p>
+            La IA integra datos de cumplimiento de objetivos, feedback 360,
+            actividad en proyectos, etc., para generar insights y
+            recomendaciones objetivas.
+          </p>
+          <table class="dummy-data-table">
+            <thead>
+              <tr>
+                <th>Métrica/Feedback</th>
+                <th>Datos Cuantitativos</th>
+                <th>Datos Cualitativos (Extracto)</th>
+                <th>Análisis/Insight IA</th>
+                <th>Sugerencia de Desarrollo IA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Cumplimiento de Objetivos</td>
+                <td>118% del KPI de Cierres</td>
+                <td>N/A</td>
+                <td>Supera las expectativas en ventas.</td>
+                <td>Explorar rol con mayor cuota/responsabilidad.</td>
+              </tr>
+              <tr>
+                <td>Feedback del Equipo</td>
+                <td>Score promedio 4.5/5 (Liderazgo)</td>
+                <td>
+                  "Muy buen líder, guía bien al equipo." "Ayuda a resolver
+                  impedimentos rápidamente."
+                </td>
+                <td>Fuerte habilidad de liderazgo y soporte al equipo.</td>
+                <td>Considerar programas de desarrollo de alto potencial.</td>
+              </tr>
+              <tr>
+                <td>Participación en Proyectos</td>
+                <td>Lideró 2 proyectos clave</td>
+                <td>
+                  "Excelente gestión del proyecto X." "Comunicación fluida con
+                  stakeholders."
+                </td>
+                <td>Demuestra capacidad para liderar iniciativas complejas.</td>
+                <td>Asignar proyecto estratégico transversal.</td>
+              </tr>
+              <tr>
+                <td>Brecha de Habilidad Identificada</td>
+                <td>N/A</td>
+                <td>"Podría mejorar la delegación."</td>
+                <td>Oportunidad de desarrollo en habilidades de delegación.</td>
+                <td>Workshop sobre "Delegación Efectiva", mentoría.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            Este análisis basado en datos ayuda a reducir sesgos y permite
+            conversaciones de desempeño más constructivas.
+          </p>
+        </div>
+      </div>
+
+      <div class="use-case">
+        <div class="use-case-header">
+          <div class="icon">📅</div>
+          <div class="title">
+            <h3>Planificación de la Fuerza Laboral</h3>
+            <p>
+              Anticipación precisa de necesidades futuras, optimización de
+              recursos y adaptación proactiva a cambios del mercado.
+            </p>
+          </div>
+        </div>
+        <div class="use-case-details">
+          <h4>Ejemplo: Previsión de Necesidades Futuras (Dummy)</h4>
+          <p>
+            La IA analiza tendencias del mercado, proyecciones de negocio, tasas
+            de rotación internas y demografía para predecir la demanda de roles
+            y habilidades.
+          </p>
+          <div class="dummy-chart-bar" style="height: 150px">
+            <div class="bar1" style="height: 70%; background-color: #ff9900">
+              +10%<span>Ventas (Próx. 12m)</span>
+            </div>
+            <div class="bar2" style="height: 95%; background-color: #3366cc">
+              +18%<span>Tecnología (Próx. 12m)</span>
+            </div>
+            <div class="bar3" style="height: 40%; background-color: #dc3912">
+              +5%<span>Marketing (Próx. 12m)</span>
+            </div>
+            <div class="bar4" style="height: 60%; background-color: #109618">
+              +8%<span>Soporte Cliente (Próx. 12m)</span>
+            </div>
+          </div>
+          <p style="text-align: center; margin-top: 10px">
+            Proyección de Crecimiento de Headcount por Área (Dummy Data)
+          </p>
+          <table class="dummy-data-table">
+            <thead>
+              <tr>
+                <th>Área</th>
+                <th>Roles Clave</th>
+                <th>Necesidad Proyectada (12 meses)</th>
+                <th>Brechas de Habilidad Potenciales</th>
+                <th>Recomendación IA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Tecnología</td>
+                <td>Desarrollador Back-end, DevOps</td>
+                <td>+15 nuevos roles</td>
+                <td>Cloud Security, Microservicios</td>
+                <td>
+                  Iniciar reclutamiento proactivo, planes de upskilling interno.
+                </td>
+              </tr>
+              <tr>
+                <td>Ventas</td>
+                <td>Ejecutivo de Cuentas Senior</td>
+                <td>+8 nuevos roles</td>
+                <td>Venta Consultiva B2B</td>
+                <td>
+                  Fortalecer programa de capacitación interna en venta B2B.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            Esta planificación ayuda a reducir costes asociados a la falta o
+            exceso de personal y asegura la alineación estratégica.
+          </p>
+        </div>
+      </div>
+
+      <div class="use-case">
+        <div class="use-case-header">
+          <div class="icon">😊</div>
+          <div class="title">
+            <h3>Experiencia y Bienestar del Empleado</h3>
+            <p>
+              Análisis en tiempo real del clima social, compromiso y soporte
+              24/7 vía chatbots para mejorar la satisfacción.
+            </p>
+          </div>
+        </div>
+        <div class="use-case-details">
+          <h4>Ejemplo: Chatbot de RRHH y Análisis de Sentimiento (Dummy)</h4>
+          <p>
+            Un asistente virtual basado en IA generativa responde preguntas y
+            gestiona solicitudes, mientras analiza el sentimiento general de las
+            interacciones para identificar problemas.
+          </p>
+          <div class="dummy-chat">
+            <div class="message user">
+              Necesito saber cómo solicitar un permiso administrativo para
+              mañana.
+            </div>
+            <div class="message ai">
+              Hola [Nombre Empleado]. Puedes solicitar un permiso administrativo
+              a través del <strong>Portal del Empleado</strong>, en la sección
+              "Solicitudes". Debes especificar el motivo brevemente. ¿Necesitas
+              el enlace directo o más detalles?
+            </div>
+            <div class="message user">Cuál es la política de teletrabajo?</div>
+            <div class="message ai">
+              Nuestra política de teletrabajo permite hasta 2 días a la semana,
+              previa coordinación y aprobación con tu manager. Puedes encontrar
+              el documento completo de política en la <strong>Intranet</strong>,
+              sección "Políticas RRHH". ¿Puedo ayudarte con algo más?
+            </div>
+            <div
+              class="message user"
+              style="background-color: #ffc107; color: #333; margin-left: auto"
+            >
+              El nuevo proceso de reporte de gastos es muy complicado.
+            </div>
+            <div class="message ai">
+              Lamento escuchar eso. Entiendo tu frustración. He registrado tu
+              comentario sobre la complejidad del nuevo proceso de reporte de
+              gastos. Este feedback es importante para nosotros. ¿Hay algo
+              específico que te resulte difícil o alguna pregunta que pueda
+              responder sobre el proceso?
+            </div>
+          </div>
+          <p>
+            El análisis del sentimiento (ej: el último mensaje identificado como
+            'frustración') permite a RRHH detectar problemas recurrentes y
+            mejorar procesos. El chatbot está disponible 24/7.
+          </p>
+        </div>
+      </div>
+
+      <div class="use-case">
+        <div class="use-case-header">
+          <div class="icon">⚙️</div>
+          <div class="title">
+            <h3>Automatización de Tareas Administrativas</h3>
+            <p>
+              Gestión eficiente de bajas, expedientes, onboarding, generación de
+              informes y otras tareas repetitivas.
+            </p>
+          </div>
+        </div>
+        <div class="use-case-details">
+          <h4>
+            Ejemplo: Flujo de Onboarding Automatizado Asistido por IA (Dummy)
+          </h4>
+          <p>
+            La IA se encarga de múltiples pasos administrativos del proceso de
+            incorporación de un nuevo empleado, liberando al equipo de RRHH.
+          </p>
+          <div class="dummy-workflow">
+            <div class="step">
+              <div class="icon">📄</div>
+              <p>Creación <br />Expediente</p>
+              <p><strong>(IA)</strong></p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="step">
+              <div class="icon">📧</div>
+              <p>Envío Pack <br />Bienvenida Digital</p>
+              <p><strong>(IA)</strong></p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="step">
+              <div class="icon">🔑</div>
+              <p>Generación <br />Credenciales Acceso</p>
+              <p><strong>(IA)</strong></p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="step">
+              <div class="icon">💸</div>
+              <p>Registro <br />Sistema Nómina</p>
+              <p><strong>(IA)</strong></p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="step">
+              <div class="icon manual-icon">👋</div>
+              <p>Bienvenida <br />Humana</p>
+              <p><strong>(RRHH)</strong></p>
+            </div>
+          </div>
+          <p>
+            La automatización reduce el tiempo dedicado a estas tareas, minimiza
+            errores y permite al equipo enfocarse en la integración cultural y
+            estratégica del nuevo empleado.
+          </p>
+        </div>
+      </div>
+
+      <div class="use-case">
+        <div class="use-case-header">
+          <div class="icon">🧠</div>
+          <div class="title">
+            <h3>Análisis de Competencias y Gestión del Talento</h3>
+            <p>
+              Mapeo detallado del capital humano, identificación de brechas y
+              recomendaciones para movilidad interna y desarrollo estratégico.
+            </p>
+          </div>
+        </div>
+        <div class="use-case-details">
+          <h4>
+            Ejemplo: Mapa de Habilidades y Plan de Carrera Sugerido por IA
+            (Dummy)
+          </h4>
+          <p>
+            La IA analiza las habilidades, experiencia y rendimiento de los
+            empleados para identificar posibles trayectorias de carrera internas
+            y sugerir acciones de desarrollo.
+          </p>
+          <div class="dummy-comparison">
+            <div>
+              <h5>Perfil y Habilidades Actuales (Dummy)</h5>
+              <p><strong>Nombre:</strong> Andrés Castro</p>
+              <p><strong>Puesto:</strong> Ingeniero de Software Semi-Senior</p>
+              <p><strong>Antigüedad:</strong> 3 años</p>
+              <p>
+                <strong>Habilidades Fuertes:</strong> Java, SQL, Desarrollo
+                Back-end
+              </p>
+              <p>
+                <strong>Habilidades a Desarrollar:</strong> Liderazgo Técnico,
+                Arquitectura Cloud, Metodologías Ágiles Avanzadas
+              </p>
+            </div>
+            <div>
+              <h5>Análisis y Recomendación de Carrera por IA (Dummy)</h5>
+              <p>
+                <strong>Potencial Siguiente Rol Identificado:</strong> Ingeniero
+                de Software Senior, Líder Técnico de Equipo.
+              </p>
+              <p>
+                <strong>Brechas Clave para el Rol Senior:</strong> Habilidades
+                de Mentoría y Liderazgo de Proyectos Pequeños.
+              </p>
+              <p><strong>Acciones de Desarrollo Sugeridas:</strong></p>
+              <ul>
+                <li>
+                  Participar en programa interno de mentoría para juniors.
+                </li>
+                <li>Liderar un módulo técnico en el próximo proyecto.</li>
+                <li>
+                  Curso/Certificación en AWS/Azure (Arquitectura Asociado).
+                </li>
+                <li>
+                  Workshop de "Comunicación y Liderazgo para Equipos Técnicos".
+                </li>
+              </ul>
+              <p>
+                La IA optimiza la gestión del talento interno, facilitando la
+                retención y el crecimiento profesional dentro de la empresa.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="use-case">
+        <div class="use-case-header">
+          <div class="icon">✍️</div>
+          <div class="title">
+            <h3>Generación de Contenidos de RRHH</h3>
+            <p>
+              Producción masiva, personalizada y atractiva de descripciones de
+              puestos, comunicaciones internas, materiales de onboarding y más.
+            </p>
+          </div>
+        </div>
+        <div class="use-case-details">
+          <h4>Ejemplo: Descripción de Puesto Generada por IA (Dummy)</h4>
+          <p>
+            A partir de inputs básicos (cargo, área, reporte), la IA redacta un
+            borrador completo, optimizado para atraer candidatos y reflejar la
+            cultura de la empresa.
+          </p>
+          <div class="dummy-comparison">
+            <div>
+              <h5>Input Básico (Dummy)</h5>
+              <ul>
+                <li><strong>Cargo:</strong> Gerente de Proyecto TI</li>
+                <li><strong>Área:</strong> Tecnología</li>
+                <li><strong>Reporta a:</strong> Director TI</li>
+                <li>
+                  <strong>Funciones principales:</strong> Liderar proyectos de
+                  software, gestionar equipo de 5 personas, asegurar
+                  cumplimiento de plazos.
+                </li>
+                <li>
+                  <strong>Requisitos clave:</strong> 5+ años experiencia,
+                  gestión de equipos, PMP deseable.
+                </li>
+                <li>
+                  <strong>Cultura:</strong> Innovación, colaboración, enfoque en
+                  el cliente.
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h5>Descripción Generada por IA (Dummy)</h5>
+              <p>
+                <strong>Título del Puesto:</strong> Gerente de Proyecto Senior -
+                Tecnología
+              </p>
+              <p><strong>Ubicación:</strong> Santiago, Chile</p>
+              <p><strong>Reporta a:</strong> Director/a de Tecnología</p>
+              <p>
+                <strong>Resumen del Puesto:</strong><br />Buscamos un/a Gerente
+                de Proyecto TI altamente experimentado/a y motivado/a para
+                unirse a nuestro dinámico equipo en Santiago. Serás responsable
+                de liderar y ejecutar proyectos tecnológicos estratégicos de
+                principio a fin, gestionando un equipo de desarrolladores y
+                asegurando la entrega exitosa dentro del tiempo y presupuesto
+                establecidos. Esta posición es clave para impulsar nuestra
+                agenda de innovación y crecimiento en el sector.
+              </p>
+              <p><strong>Responsabilidades Principales:</strong></p>
+              <ul>
+                <li>
+                  Planificar, ejecutar y cerrar proyectos de desarrollo de
+                  software, utilizando metodologías ágiles o híbridas.
+                </li>
+                <li>
+                  Liderar, motivar y gestionar el rendimiento de un equipo
+                  técnico de 5-7 personas.
+                </li>
+                <li>
+                  Comunicación fluida con stakeholders internos y externos,
+                  incluyendo clientes de negocio.
+                </li>
+                <li>
+                  Gestionar el alcance, cronograma y presupuesto del proyecto,
+                  identificando y mitigando riesgos.
+                </li>
+                <li>
+                  Asegurar la calidad técnica de las entregas y la adopción de
+                  mejores prácticas.
+                </li>
+                <li>
+                  Reportar el progreso del proyecto al Director de Tecnología y
+                  otros ejecutivos.
+                </li>
+              </ul>
+              <p><strong>Requisitos:</strong></p>
+              <ul>
+                <li>
+                  Mínimo 5 años de experiencia comprobable en gestión de
+                  proyectos de TI.
+                </li>
+                <li>
+                  Experiencia demostrada liderando y gestionando equipos
+                  técnicos.
+                </li>
+                <li>
+                  Conocimiento sólido de ciclos de vida de desarrollo de
+                  software (SDLC).
+                </li>
+                <li>
+                  Familiaridad con metodologías de gestión de proyectos (Agile,
+                  Scrum, Waterfall).
+                </li>
+                <li>
+                  Excelentes habilidades de comunicación, liderazgo y resolución
+                  de problemas.
+                </li>
+                <li>
+                  Título universitario en Ingeniería Informática, Ciencias de la
+                  Computación o área relacionada.
+                </li>
+                <li>Certificación PMP o SCRUM Master es un plus.</li>
+              </ul>
+              <p><strong>Nuestra Cultura y lo que Ofrecemos:</strong></p>
+              <p>
+                Somos una empresa que valora la innovación, la colaboración y
+                pone al cliente en el centro. Ofrecemos un ambiente de trabajo
+                desafiante y colaborativo, oportunidades de desarrollo
+                profesional continuo, beneficios competitivos y la posibilidad
+                de trabajar en proyectos de gran impacto. Creemos en la
+                autonomía y en dar espacio para proponer nuevas ideas.
+              </p>
+              <p>
+                Si eres una persona apasionada por la tecnología, con
+                experiencia liderando equipos y proyectos exitosos, y buscas
+                unirte a una empresa en crecimiento donde puedas dejar tu
+                huella, ¡te invitamos a postular!
+              </p>
+            </div>
+          </div>
+          <p>
+            Esta capacidad de generar contenido de alta calidad y relevancia a
+            escala transforma la comunicación interna y el marketing de RRHH.
+          </p>
+        </div>
+      </div>
+
+      <div class="use-case">
+        <div class="use-case-header">
+          <div class="icon">📊</div>
+          <div class="title">
+            <h3>Análisis de Datos (People Analytics)</h3>
+            <p>
+              Procesamiento de grandes volúmenes de datos de RRHH para
+              identificar patrones, predecir tendencias y generar insights
+              estratégicos para la toma de decisiones.
+            </p>
+          </div>
+        </div>
+        <div class="use-case-details">
+          <h4>
+            Ejemplo: Insights de People Analytics Generados por IA (Dummy)
+          </h4>
+          <p>
+            La IA analiza datos de múltiples fuentes (encuestas, sistemas de
+            RRHH, desempeño) para ofrecer una visión profunda de la fuerza
+            laboral.
+          </p>
+          <div class="dummy-chart-bar" style="height: 150px">
+            <div class="bar1" style="height: 90%; background-color: #007bff">
+              4.2<span>Satisfacción Promedio (1-5)</span>
+            </div>
+            <div class="bar2" style="height: 60%; background-color: #ff9900">
+              75%<span>Participación Encuestas</span>
+            </div>
+            <div class="bar3" style="height: 80%; background-color: #28a745">
+              4.5 años<span>Antigüedad Promedio</span>
+            </div>
+            <div class="bar4" style="height: 40%; background-color: #dc3912">
+              12%<span>Tasa de Rotación Anual</span>
+            </div>
+          </div>
+          <p style="text-align: center; margin-top: 10px">
+            Métricas Clave de People Analytics (Dummy Data)
+          </p>
+          <table class="dummy-data-table">
+            <thead>
+              <tr>
+                <th>Análisis IA</th>
+                <th>Insight Clave (Dummy)</th>
+                <th>Recomendación Estratégica (Dummy)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Análisis de Rotación por Departamento</td>
+                <td>
+                  El departamento de Soporte Técnico tiene una tasa de rotación
+                  un 5% superior al promedio de la empresa.
+                </td>
+                <td>
+                  Investigar factores específicos en Soporte Técnico (carga de
+                  trabajo, desarrollo, liderazgo).
+                </td>
+              </tr>
+              <tr>
+                <td>Análisis de Correlación Rendimiento vs. Formación</td>
+                <td>
+                  Los empleados que completaron la formación X muestran un 15%
+                  más de cumplimiento de objetivos en los 6 meses siguientes.
+                </td>
+                <td>
+                  Priorizar y ampliar la formación X a más empleados,
+                  especialmente en áreas de bajo rendimiento.
+                </td>
+              </tr>
+              <tr>
+                <td>Análisis de Sentimiento en Encuestas Abiertas</td>
+                <td>
+                  Alto volumen de comentarios positivos sobre la flexibilidad
+                  horaria, pero inquietud recurrente sobre las oportunidades de
+                  crecimiento interno.
+                </td>
+                <td>
+                  Comunicar activamente las vías de desarrollo y promoción
+                  interna, quizás lanzar un programa de "movilidad interna
+                  visible".
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            La IA transforma datos brutos en inteligencia accionable para
+            mejorar la estrategia de RRHH.
+          </p>
+        </div>
+      </div>
+
+      <div class="use-case">
+        <div class="use-case-header">
+          <div class="icon">⚖️</div>
+          <div class="title">
+            <h3>IA como Auditor para Decisiones Justas</h3>
+            <p>
+              Supervisión ética para detectar y mitigar sesgos en procesos
+              críticos como selección, promoción y evaluación, garantizando
+              equidad.
+            </p>
+          </div>
+        </div>
+        <div class="use-case-details">
+          <h4>
+            Ejemplo: Proceso de Auditoría de Sesgos de Selección por IA (Dummy)
+          </h4>
+          <p>
+            La IA revisa los resultados de los procesos de RRHH para identificar
+            patrones que puedan sugerir sesgos inconscientes y proporciona
+            alertas o recomendaciones para corregirlos.
+          </p>
+          <div class="dummy-workflow">
+            <div class="step">
+              <div class="icon">🧑‍💼👩‍💼</div>
+              <p>Proceso RRHH<br />(Ej: Selección)</p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="step">
+              <div class="icon">📊</div>
+              <p>Recopilación<br />Resultados/Datos</p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="step">
+              <div class="icon manual-icon">🤖</div>
+              <p>Análisis<br />IA Auditor</p>
+              <p><strong>(Detección Sesgos)</strong></p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="step">
+              <div class="icon manual-icon">⚠️</div>
+              <p>
+                Alerta/Reporte<br />
+                Sesgo Potencial
+              </p>
+              <p><strong>(A RRHH)</strong></p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="step">
+              <div class="icon">🤝</div>
+              <p>Revisión Humana<br />y Corrección</p>
+              <p><strong>(RRHH + Manager)</strong></p>
+            </div>
+          </div>
+          <table class="dummy-data-table" style="margin-top: 20px">
+            <thead>
+              <tr>
+                <th>Proceso Auditado</th>
+                <th>Análisis IA (Dummy)</th>
+                <th>Alerta/Hallazgo (Dummy)</th>
+                <th>Acción Correctiva Sugerida (Dummy)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Cribado Inicial de CVs</td>
+                <td>
+                  Analiza palabras clave y patrones en CVs vs. Perfiles
+                  Exitosos.
+                </td>
+                <td>
+                  Detecta que CVs con experiencia en Startup son subvalorados
+                  vs. Corporativo, introduciendo sesgo sectorial.
+                </td>
+                <td>
+                  Ajustar ponderación de la experiencia en Startup, revisión
+                  manual de CVs filtrados.
+                </td>
+              </tr>
+              <tr>
+                <td>Evaluación de Desempeño Anual</td>
+                <td>
+                  Compara puntuaciones entre managers y grupos demográficos.
+                </td>
+                <td>
+                  Observa una tendencia de puntuaciones consistentemente más
+                  bajas para el equipo X bajo el Manager Y.
+                </td>
+                <td>
+                  Investigar posibles sesgos de manager, ofrecer coaching o
+                  capacitación en evaluación.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            La IA actúa como un 'segundo par de ojos' para asegurar que las
+            decisiones sean lo más justas y equitativas posible.
+          </p>
+        </div>
+      </div>
+
+      <div class="benefits">
+        <h2>Beneficios Clave de la IA en RRHH</h2>
+        <ul>
+          <li>Mejora de la productividad y agilización de procesos.</li>
+          <li>Mejora de la experiencia del empleado y del candidato.</li>
+          <li>Aumento de la precisión y la calidad.</li>
+          <li>Reducción de costes (contratación, rotación).</li>
+          <li>Disponibilidad 24/7 de soporte.</li>
+          <li>Liberación de tiempo para tareas estratégicas.</li>
+          <li>Toma de decisiones más informada y basada en datos.</li>
+          <li>Fortalecimiento de la marca empleadora.</li>
+        </ul>
+      </div>
+
+      <div class="challenges">
+        <h2>Consideraciones y Desafíos</h2>
+        <ul>
+          <li>
+            Ética y Sesgos: Asegurar que la IA no perpetúe ni introduzca nuevos
+            sesgos.
+          </li>
+          <li>
+            Protección de Datos y Privacidad: Cumplir con normativas estrictas
+            como GDPR.
+          </li>
+          <li>
+            Supervisión Humana: La IA debe complementar, no reemplazar, la
+            experticia humana.
+          </li>
+          <li>
+            Gestión del Cambio y Desarrollo de Habilidades: Preparar a los
+            equipos para la nueva tecnología.
+          </li>
+          <li>
+            Preocupaciones sobre el Uso: Abordar la falta de experiencia,
+            inquietudes de privacidad y calidad de datos.
+          </li>
+        </ul>
+      </div>
+
+      <div class="context">
+        <h2>Contexto Específico (Chile)</h2>
+        <p>
+          Según el informe, en Chile, empresas líderes priorizan casos como la
+          generación de descripciones de puestos, asistentes inteligentes
+          (chatbots) y contenido de onboarding. La adaptación a prioridades
+          sectoriales (banca, manufactura, telecomunicaciones) es clave. La
+          visión de la tecnología como solución a problemas de negocio impulsa
+          la adopción.
+        </p>
+        <ul>
+          <li>
+            Prioridades identificadas: Generación de Descripciones de Puestos,
+            Asistentes Inteligentes (Chatbots), Contenido de Onboarding.
+          </li>
+          <li>
+            Adaptación Sectorial: Importante considerar las necesidades
+            específicas de Banca, Manufactura y Telecomunicaciones.
+          </li>
+          <li>
+            Enfoque Estratégico: La IA es vista como una herramienta para
+            resolver problemas de negocio concretos en RRHH.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <footer>
+      <p>
+        &copy; 2025 Adaptado de información sobre "Casos IA Generativa Recursos
+        Humanos"
+      </p>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const useCaseHeaders = document.querySelectorAll(".use-case-header");
+
+        useCaseHeaders.forEach((header) => {
+          header.addEventListener("click", function () {
+            // Encuentra el div de detalles asociado a este header
+            const details = this.nextElementSibling; // El siguiente hermano es use-case-details
+            const isCurrentlyVisible = details.style.display === "block";
+
+            // Oculta todos los demás detalles y restaura sus bordes
+            document.querySelectorAll(".use-case-details").forEach((detail) => {
+              detail.style.display = "none";
+            });
+            document.querySelectorAll(".use-case-header").forEach((hdr) => {
+              hdr.style.borderBottom = "1px solid #ddd";
+            });
+
+            // Si no estaba visible, lo mostramos y quitamos el borde inferior del header
+            if (!isCurrentlyVisible) {
+              details.style.display = "block";
+              this.style.borderBottom = "none";
+            }
+            // Si ya estaba visible, el bucle anterior ya lo ocultó, no hacemos nada más
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

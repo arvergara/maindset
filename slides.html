@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAIndset EXPLORA - Presentación</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --accent: #3498db;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: var(--dark);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .presentation {
+            position: relative;
+            height: 700px;
+            width: 100%;
+            overflow: hidden;
+            background-color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 40px 60px 80px 60px;
+            transition: transform 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            opacity: 0;
+            background-size: cover;
+            background-position: center;
+            overflow-y: auto;
+        }
+        
+        .slide.active {
+            transform: translateX(0);
+            opacity: 1;
+            z-index: 10;
+        }
+        
+        .slide-content {
+            max-width: 90%;
+            margin: 0 auto;
+            padding-top: 20px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            border-bottom: 4px solid #e74c3c;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+        
+        h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .emphasis {
+            color: #e74c3c;
+            font-weight: bold;
+            border-bottom: 2px dotted #e74c3c;
+            padding-bottom: 2px;
+        }
+        
+        .navigation {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 60px;
+            z-index: 20;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-top: 1px solid #f0f0f0;
+            height: 60px;
+            align-items: center;
+        }
+        
+        .btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .btn-disabled:hover {
+            background-color: #bdc3c7;
+        }
+        
+        .progress {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .progress-dot {
+            height: 12px;
+            width: 12px;
+            margin: 0 5px;
+            background-color: #bdc3c7;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .progress-dot.active {
+            background-color: var(--accent);
+            transform: scale(1.2);
+        }
+        
+        .highlight-box {
+            background-color: rgba(44, 62, 80, 0.05);
+            border-left: 4px solid var(--secondary);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .metrics {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        
+        .metric-item {
+            text-align: center;
+            padding: 15px;
+            background-color: rgba(52, 152, 219, 0.1);
+            border-radius: 5px;
+            flex: 1;
+            margin: 0 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .metric-value {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 1em;
+            color: #333;
+        }
+        
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            position: relative;
+            padding: 0 20px;
+        }
+        
+        .timeline:after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            background-color: var(--accent);
+            top: 20px;
+            left: 0;
+            z-index: 1;
+        }
+        
+        .timeline-item {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 20%;
+        }
+        
+        .timeline-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 10px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .timeline-label {
+            font-size: 0.9em;
+            color: var(--dark);
+            max-width: 120px;
+            margin: 0 auto;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .benefit-icon {
+            width: 30px;
+            height: 30px;
+            background-color: #4CD964;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        
+        .comparison-table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: normal;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: rgba(44, 62, 80, 0.05);
+        }
+        
+        .comparison-table .positive {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .comparison-table .negative {
+            color: var(--secondary);
+        }
+        
+        .workshop-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .workshop-text {
+            flex: 1;
+            padding-right: 30px;
+        }
+        
+        .workshop-chart {
+            flex: 1;
+            height: 250px;
+            background-color: rgba(44, 62, 80, 0.05);
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-segment {
+            position: absolute;
+            bottom: 0;
+            width: 40%;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .segment-1 {
+            height: 70%;
+            background-color: var(--accent);
+            left: 10%;
+        }
+        
+        .segment-2 {
+            height: 30%;
+            background-color: var(--secondary);
+            right: 10%;
+        }
+        
+        .segment-label {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .segment-1 .segment-label {
+            bottom: 20px;
+        }
+        
+        .segment-2 .segment-label {
+            bottom: 10px;
+        }
+        
+        .adoption-curve {
+            height: 200px;
+            position: relative;
+            margin: 40px 0;
+            background-color: rgba(44, 62, 80, 0.05);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .curve {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(ellipse at center, transparent 0%, transparent 50%, #ff000000 51%, #3498db 90%);
+            transform: skewY(-10deg) scale(2);
+            transform-origin: left bottom;
+        }
+        
+        .marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            transform: translate(-50%, -50%);
+        }
+        
+        .marker-now {
+            left: 30%;
+            top: 60%;
+        }
+        
+        .marker-future {
+            left: 70%;
+            top: 30%;
+            background-color: var(--success);
+        }
+        
+        .marker-text {
+            position: absolute;
+            white-space: nowrap;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        
+        .marker-now .marker-text {
+            bottom: 30px;
+            left: -20px;
+        }
+        
+        .marker-future .marker-text {
+            bottom: 30px;
+            left: -40px;
+        }
+        
+        /* Logo estilo */
+        .logo {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            z-index: 30;
+        }
+        
+        .logo-text {
+            font-family: 'Arial', sans-serif;
+            font-weight: 800;
+        }
+        
+        .logo-highlight {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="presentation">
+            <div class="logo">
+                <div class="logo-text">MAInd<span class="logo-highlight">set</span></div>
+            </div>
+            
+            <!-- Slide 1: El momento -->
+            <div class="slide active" id="slide1">
+                <div class="slide-content">
+                    <h1>El momento</h1>
+                    <div class="highlight-box">
+                        <p>"Usted conoce las cifras, así que no las discutiremos: la IA generativa ya entrega <span class="emphasis">+40% de productividad</span> en servicios profesionales (BCG) y tensiona <span class="emphasis">300M de puestos de trabajo</span> (Goldman Sachs)."</p>
+                        <p>"La pregunta no es si la usaremos, sino quién capturará primero el valor y en qué procesos. Nuestra decisión hoy es si seguimos mirando la curva desde afuera o si la piloteamos con control de riesgos y KPIs claros."</p>
+                    </div>
+                    <div class="metrics">
+                        <div class="metric-item">
+                            <div class="metric-value">+40%</div>
+                            <div class="metric-label">Productividad en servicios profesionales</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">300M</div>
+                            <div class="metric-label">Puestos de trabajo impactados</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">Ahora</div>
+                            <div class="metric-label">Es el momento de actuar</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 2: ¿Qué es MAIndset Explora? -->
+            <div class="slide" id="slide2">
+                <div class="slide-content">
+                    <h1>¿Qué es MAIndset Explora?</h1>
+                    <p>"Explora no sustituye a su equipo; lo <span class="emphasis">acelera</span>. En cuatro semanas medimos brechas, transferimos práctica real y dejamos un roadmap accionable hecho con su gente."</p>
+                    <p>"Sin licencias ni CAPEX: solo tiempo ejecutivo focalizado. Pensémoslo como una <span class="emphasis">prueba de concepto sobre la propia operación</span> antes de mover cualquier ficha grande."</p>
+                    
+                    <div class="benefit-item">
+                        <div class="benefit-icon">✓</div>
+                        <div>Medición de brechas y oportunidades reales</div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">✓</div>
+                        <div>Transferencia de conocimiento aplicado</div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">✓</div>
+                        <div>Roadmap accionable con KPIs concretos</div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">✓</div>
+                        <div>Sin licencias, suscripciones ni costos ocultos</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 3: Viaje de 4 semanas -->
+            <div class="slide" id="slide3">
+                <div class="slide-content">
+                    <h1>Viaje de 4 semanas</h1>
+                    <p>"En <span class="emphasis">20 días hábiles</span> entregamos tres cosas tangibles:"</p>
+                    
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-dot">1</div>
+                            <div class="timeline-label">Assessment de madurez y compliance</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot">2</div>
+                            <div class="timeline-label">Workshops prácticos</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot">3</div>
+                            <div class="timeline-label">Capacitación prompt-engineering</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot">4</div>
+                            <div class="timeline-label">Workshop de recapitulación</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot">5</div>
+                            <div class="timeline-label">Roadmaps individuales</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                        <div style="flex: 1; padding: 15px; background-color: rgba(44, 62, 80, 0.05); border-radius: 8px; margin-right: 10px;">
+                            <div style="font-weight: bold; color: #e74c3c; margin-bottom: 5px;">1. Radiografía de madurez</div>
+                            <p style="font-size: 0.9em; margin-bottom: 0;">Mapa de oportunidades, riesgos y grado de preparación organizacional</p>
+                        </div>
+                        <div style="flex: 1; padding: 15px; background-color: rgba(44, 62, 80, 0.05); border-radius: 8px; margin-right: 10px;">
+                            <div style="font-weight: bold; color: #e74c3c; margin-bottom: 5px;">2. Capacitación de key users</div>
+                            <p style="font-size: 0.9em; margin-bottom: 0;">Habilidades prácticas de prompt-engineering y creación de mini-agentes</p>
+                        </div>
+                        <div style="flex: 1; padding: 15px; background-color: rgba(44, 62, 80, 0.05); border-radius: 8px;">
+                            <div style="font-weight: bold; color: #e74c3c; margin-bottom: 5px;">3. Quick-wins priorizados</div>
+                            <p style="font-size: 0.9em; margin-bottom: 0;">Listado de oportunidades evaluadas por ROI y complejidad de implementación</p>
+                        </div>
+                    </div>
+                    
+                    <p style="margin-top: 20px;">"Si alguno no convence, se descarta. El costo de aprender es fijo y acotado; el costo de no probar es exponencial."</p>
+                </div>
+            </div>
+            
+            <!-- Slide 4: Workshops ejecutivos -->
+            <div class="slide" id="slide4">
+                <div class="slide-content">
+                    <h1>Workshops ejecutivos: aprender haciendo</h1>
+                    
+                    <div class="workshop-content" style="margin-bottom: 30px;">
+                        <div class="workshop-text" style="width: 60%;">
+                            <p>"Nada de teoría PowerPoint. Cada sesión produce un <span class="emphasis">artefacto que queda en su dominio</span>—por ejemplo, este agente que resume reportes regulatorios en 60s."</p>
+                            <p style="margin-top: 20px;">"El <span class="emphasis">60%</span> de la jornada es teclado en mano; el <span class="emphasis">40%</span> debate de riesgos y gobierno. Así evitamos 'consultoría de shelf' y dejamos capacidad instalada."</p>
+                        
+                            <div class="benefit-item" style="margin-top: 30px;">
+                                <div class="benefit-icon">✓</div>
+                                <div>Creación de agentes personalizados</div>
+                            </div>
+                            <div class="benefit-item">
+                                <div class="benefit-icon">✓</div>
+                                <div>Prompts optimizados para casos específicos</div>
+                            </div>
+                            <div class="benefit-item">
+                                <div class="benefit-icon">✓</div>
+                                <div>Análisis de riesgos y políticas de gobierno</div>
+                            </div>
+                        </div>
+                        <div class="workshop-chart" style="width: 35%; height: 250px; margin-left: 20px;">
+                            <div class="chart-segment segment-1" style="left: 0; width: 48%; height: 60%; border-radius: 8px 8px 0 0; background-color: #6777f2;">
+                                <div class="segment-label" style="bottom: 50%; transform: translateY(50%); font-size: 16px; width: 100%; text-align: center;">60% Práctica</div>
+                            </div>
+                            <div class="chart-segment segment-2" style="right: 0; width: 48%; height: 40%; border-radius: 8px 8px 0 0; background-color: #e74c3c;">
+                                <div class="segment-label" style="bottom: 50%; transform: translateY(50%); font-size: 16px; width: 100%; text-align: center;">40% Debate</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background-color: rgba(44, 62, 80, 0.05); padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 1.3em;">Contenido de los 4 workshops</h3>
+                        
+                        <div style="display: flex; margin-bottom: 10px; align-items: center;">
+                            <div style="min-width: 35px; height: 35px; border-radius: 50%; background-color: #3498db; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; margin-right: 15px;">1</div>
+                            <div>
+                                <div style="font-weight: bold; color: #2c3e50;">Introducción a los distintos LLMs</div>
+                                <div style="font-size: 0.9em;">Configuración, memoria, capacidades distintas, Prompting básico</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; margin-bottom: 10px; align-items: center;">
+                            <div style="min-width: 35px; height: 35px; border-radius: 50%; background-color: #3498db; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; margin-right: 15px;">2</div>
+                            <div>
+                                <div style="font-weight: bold; color: #2c3e50;">Prompt Engineering 2.0</div>
+                                <div style="font-size: 0.9em;">Configuración de Mini-Agentes Personales, Uso de RAGs</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; margin-bottom: 10px; align-items: center;">
+                            <div style="min-width: 35px; height: 35px; border-radius: 50%; background-color: #3498db; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; margin-right: 15px;">3</div>
+                            <div>
+                                <div style="font-weight: bold; color: #2c3e50;">Aplicaciones avanzadas</div>
+                                <div style="font-size: 0.9em;">Modelos opensource, uso de APIs, Vibe-Coding</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center;">
+                            <div style="min-width: 35px; height: 35px; border-radius: 50%; background-color: #3498db; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; margin-right: 15px;">4</div>
+                            <div>
+                                <div style="font-weight: bold; color: #2c3e50;">Revisión de Contenidos</div>
+                                <div style="font-size: 0.9em;">Roadmaps individuales, consolidación de aprendizajes y próximos pasos</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 5: Resultados esperados -->
+            <div class="slide" id="slide5">
+                <div class="slide-content">
+                    <h1>Resultados esperados</h1>
+                    <div class="highlight-box">
+                        <p>"El lunes siguiente sus gerentes ya tienen prompts y agentes que ahorran horas; usted tiene mapa de riesgos y políticas mínimas."</p>
+                        <p>"Tres casos con business-case listos para piloto. Si alguno no libera valor medible, no avanzamos: la puerta de salida está incorporada en el modelo."</p>
+                    </div>
+                    
+                    <div class="comparison-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Entregable</th>
+                                    <th>Impacto inmediato</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Prompts y agentes</td>
+                                    <td>Automatización de tareas repetitivas</td>
+                                    <td class="positive">Ahorro de horas desde el día 1</td>
+                                </tr>
+                                <tr>
+                                    <td>Mapa de riesgos</td>
+                                    <td>Gobierno y compliance</td>
+                                    <td class="positive">Control y visibilidad</td>
+                                </tr>
+                                <tr>
+                                    <td>Business-cases</td>
+                                    <td>Pilotos acotados de alto ROI</td>
+                                    <td class="positive">Valor medible o no avanzamos</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 6: ¿Qué viene después? -->
+            <div class="slide" id="slide6">
+                <div class="slide-content">
+                    <h1>¿Qué viene después?</h1>
+                    <p>"Explora siembra; <span class="emphasis">ACELERA</span> escala un único quick-win a piloto formal en 60-90 días, financiado con el ahorro que genera."</p>
+                    <p>"Sin obligación de continuar: si el piloto no paga, paramos. Aquí no vendemos horas, vendemos tracción."</p>
+                    
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-dot">1</div>
+                            <div class="timeline-label">Explora (4 semanas)</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot">2</div>
+                            <div class="timeline-label">Selección de quick-win</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot">3</div>
+                            <div class="timeline-label">ACELERA (60-90 días)</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot">4</div>
+                            <div class="timeline-label">Evaluación de ROI</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot">5</div>
+                            <div class="timeline-label">Escalado o finalización</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 7: Coste de la inacción -->
+            <div class="slide" id="slide7">
+                <div class="slide-content">
+                    <h1>Coste de la inacción</h1>
+                    
+                    <div class="comparison-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Benchmark sectorial</th>
+                                    <th>Empresa que actúa</th>
+                                    <th>Empresa que espera</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Productividad</td>
+                                    <td class="positive">+35% en 9 meses</td>
+                                    <td class="negative">Sin cambios</td>
+                                </tr>
+                                <tr>
+                                    <td>Calidad de servicio</td>
+                                    <td class="positive">+28% satisfacción cliente</td>
+                                    <td class="negative">-5% (competencia mejora)</td>
+                                </tr>
+                                <tr>
+                                    <td>Talento especializado</td>
+                                    <td class="positive">Capacitado y retenido</td>
+                                    <td class="negative">Fuga de talento</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="adoption-curve">
+                        <div class="curve"></div>
+                        <div class="marker marker-now">
+                            <div class="marker-text">AHORA</div>
+                        </div>
+                        <div class="marker marker-future">
+                            <div class="marker-text">Estándar de mercado</div>
+                        </div>
+                    </div>
+                    
+                    <p>"El riesgo real no es probar y fallar; es quedarse sin datos, sin skills y sin palancas de eficiencia cuando el mercado ya estandarizó GenAI."</p>
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <button class="btn" id="prevBtn">Anterior</button>
+                <div class="progress">
+                    <div class="progress-dot active" data-slide="1"></div>
+                    <div class="progress-dot" data-slide="2"></div>
+                    <div class="progress-dot" data-slide="3"></div>
+                    <div class="progress-dot" data-slide="4"></div>
+                    <div class="progress-dot" data-slide="5"></div>
+                    <div class="progress-dot" data-slide="6"></div>
+                    <div class="progress-dot" data-slide="7"></div>
+                </div>
+                <button class="btn" id="nextBtn">Siguiente</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentSlide = 1;
+            const totalSlides = 7;
+            
+            const slides = document.querySelectorAll('.slide');
+            const progressDots = document.querySelectorAll('.progress-dot');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            function showSlide(slideNum) {
+                slides.forEach(slide => {
+                    slide.classList.remove('active');
+                });
+                
+                progressDots.forEach(dot => {
+                    dot.classList.remove('active');
+                });
+                
+                document.getElementById('slide' + slideNum).classList.add('active');
+                progressDots[slideNum - 1].classList.add('active');
+                
+                // Update buttons
+                prevBtn.disabled = (slideNum === 1);
+                nextBtn.disabled = (slideNum === totalSlides);
+                
+                prevBtn.classList.toggle('btn-disabled', slideNum === 1);
+                nextBtn.classList.toggle('btn-disabled', slideNum === totalSlides);
+                
+                currentSlide = slideNum;
+            }
+            
+            prevBtn.addEventListener('click', function() {
+                if (currentSlide > 1) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+            
+            nextBtn.addEventListener('click', function() {
+                if (currentSlide < totalSlides) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+            
+            progressDots.forEach(dot => {
+                dot.addEventListener('click', function() {
+                    const slideNum = parseInt(this.getAttribute('data-slide'));
+                    showSlide(slideNum);
+                });
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight' && currentSlide < totalSlides) {
+                    showSlide(currentSlide + 1);
+                } else if (e.key === 'ArrowLeft' && currentSlide > 1) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+            
+            // Initialize
+            showSlide(1);
+        });
+    </script>
+</body>
+</html>

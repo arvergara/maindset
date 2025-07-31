@@ -1,0 +1,2647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transformando RRHH con IA: Demo de Claude</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --primary-dark: #4f46e5;
+      --secondary: #14b8a6;
+      --secondary-light: #2dd4bf;
+      --accent: #f97316;
+      --grey-light: #f1f5f9;
+      --grey: #cbd5e1;
+      --grey-dark: #64748b;
+      --text: #334155;
+      --bg: #ffffff;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      background-color: var(--grey-light);
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 2rem 0;
+      text-align: center;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .header-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .tagline {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .logo {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: white;
+    }
+    
+    .impact-numbers {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin: 1rem 0;
+    }
+    
+    .impact-item {
+      text-align: center;
+    }
+    
+    .impact-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+    
+    .impact-label {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+    
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .card {
+      background: var(--bg);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    
+    .card-header {
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    
+    .card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+      flex-grow: 1;
+    }
+    
+    .card-benefit {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 0.8rem;
+    }
+    
+    .benefit-icon {
+      color: var(--success);
+      margin-right: 10px;
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+    
+    .card-cta {
+      background: var(--primary);
+      color: white;
+      text-align: center;
+      padding: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
+    
+    .section {
+      display: none;
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    
+    .section.active {
+      display: block;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--grey);
+    }
+    
+    .section-title {
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .section-icon {
+      color: var(--primary);
+      font-size: 1.5rem;
+    }
+    
+    .back-button {
+      background: var(--grey-light);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--grey-dark);
+      transition: background 0.3s;
+    }
+    
+    .back-button:hover {
+      background: var(--grey);
+    }
+    
+    .input-group {
+      display: flex;
+      gap: 0.8rem;
+      margin: 1.5rem 0;
+    }
+    
+    input[type="text"], input[type="email"], textarea, select {
+      flex: 1;
+      padding: 0.8rem 1rem;
+      border: 1px solid var(--grey);
+      border-radius: 6px;
+      font-size: 1rem;
+      color: var(--text);
+      background-color: var(--grey-light);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05) inset;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    
+    input[type="text"]:focus, input[type="email"]:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+    
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    button:hover {
+      background: var(--primary-dark);
+    }
+    
+    .btn-secondary {
+      background: var(--secondary);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--secondary-light);
+    }
+    
+    .btn-accent {
+      background: var(--accent);
+    }
+    
+    .btn-accent:hover {
+      background: var(--accent);
+      filter: brightness(90%);
+    }
+    
+    .output {
+      background: var(--grey-light);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      max-height: 350px;
+      overflow-y: auto;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05) inset;
+    }
+    
+    .output-title {
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .output div, .output p {
+      margin-bottom: 0.8rem;
+    }
+    
+    .output a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-block;
+      margin-top: 0.5rem;
+      transition: color 0.3s;
+    }
+    
+    .output a:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    th {
+      background: var(--primary-light);
+      color: white;
+      font-weight: 600;
+      text-align: left;
+      padding: 1rem;
+    }
+    
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--grey-light);
+    }
+    
+    tr:last-child td {
+      border-bottom: none;
+    }
+    
+    tr:hover td {
+      background: var(--grey-light);
+    }
+    
+    tr {
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .chat-message {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.2rem;
+      color: white;
+    }
+    
+    .avatar.user {
+      background: var(--grey-dark);
+    }
+    
+    .avatar.assistant {
+      background: var(--primary);
+    }
+    
+    .message-content {
+      background: white;
+      padding: 1rem;
+      border-radius: 12px;
+      max-width: 80%;
+      position: relative;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .user .message-content {
+      background: var(--grey-light);
+    }
+    
+    .assistant .message-content {
+      background: var(--bg);
+      border-left: 3px solid var(--primary);
+    }
+    
+    .message-content::before {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+      top: 15px;
+    }
+    
+    .typing-indicator {
+      display: flex;
+      gap: 0.3rem;
+      padding: 0.5rem 0;
+    }
+    
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--grey);
+      border-radius: 50%;
+      animation: typing 1.5s infinite ease-in-out;
+    }
+    
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    
+    @keyframes typing {
+      0%, 60%, 100% {
+        transform: translateY(0);
+      }
+      30% {
+        transform: translateY(-6px);
+      }
+    }
+    
+    .dashboard-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .dashboard-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--grey-light);
+    }
+    
+    .dashboard-card-title {
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .data-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    
+    .data-item {
+      background: var(--grey-light);
+      padding: 1rem;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .data-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 0.3rem;
+    }
+    
+    .data-label {
+      font-size: 0.9rem;
+      color: var(--grey-dark);
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.3rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+    
+    .badge-success {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+    
+    .badge-warning {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+    
+    .badge-info {
+      background: rgba(99, 102, 241, 0.1);
+      color: var(--primary);
+    }
+    
+    .key-feature {
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .key-feature i {
+      color: var(--primary);
+      margin-right: 0.5rem;
+    }
+    
+    .two-columns {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .skills-container {
+      margin: 1rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .skill-badge {
+      background: var(--primary-light);
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    
+    .skill-badge i {
+      font-size: 0.8rem;
+    }
+    
+    .progress-container {
+      margin: 0.8rem 0;
+    }
+    
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.3rem;
+    }
+    
+    .progress-bar {
+      height: 8px;
+      background: var(--grey-light);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 4px;
+    }
+    
+    .example-container {
+      border-left: 3px solid var(--primary);
+      padding-left: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .example-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--primary-dark);
+    }
+    
+    footer {
+      background: var(--primary-dark);
+      color: white;
+      padding: 2rem 0;
+      margin-top: 3rem;
+      text-align: center;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+    
+    .footer-content {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .footer-title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .cta-button {
+      display: inline-block;
+      background: white;
+      color: var(--primary-dark);
+      padding: 0.8rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      margin-top: 1rem;
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-decoration: none;
+    }
+    
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* Loading animation */
+    .loading {
+      display: inline-block;
+      position: relative;
+      width: 80px;
+      height: 20px;
+    }
+    
+    .loading div {
+      position: absolute;
+      top: 10px;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: var(--primary);
+      animation-timing-function: cubic-bezier(0, 1, 1, 0);
+    }
+    
+    .loading div:nth-child(1) {
+      left: 8px;
+      animation: loading1 0.6s infinite;
+    }
+    
+    .loading div:nth-child(2) {
+      left: 8px;
+      animation: loading2 0.6s infinite;
+    }
+    
+    .loading div:nth-child(3) {
+      left: 32px;
+      animation: loading2 0.6s infinite;
+    }
+    
+    .loading div:nth-child(4) {
+      left: 56px;
+      animation: loading3 0.6s infinite;
+    }
+    
+    @keyframes loading1 {
+      0% {
+        transform: scale(0);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    
+    @keyframes loading3 {
+      0% {
+        transform: scale(1);
+      }
+      100% {
+        transform: scale(0);
+      }
+    }
+    
+    @keyframes loading2 {
+      0% {
+        transform: translate(0, 0);
+      }
+      100% {
+        transform: translate(24px, 0);
+      }
+    }
+    
+    .card-testimonial {
+      font-style: italic;
+      color: var(--grey-dark);
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--grey-light);
+    }
+    
+    .card-testimonial-author {
+      font-weight: 600;
+      color: var(--text);
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .two-columns {
+        grid-template-columns: 1fr;
+      }
+      
+      .impact-numbers {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .input-group {
+        flex-direction: column;
+      }
+      
+      .section {
+        padding: 1.5rem;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Cabecera de la aplicación -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <i class="fas fa-robot"></i>
+        </div>
+        <h1>IA para RRHH: Transformando su Equipo</h1>
+        <p class="tagline">Automatice tareas, mejore decisiones y aumente la productividad de su equipo de RRHH con soluciones impulsadas por Claude</p>
+        
+        <div class="impact-numbers">
+          <div class="impact-item">
+            <div class="impact-value">65%</div>
+            <div class="impact-label">Reducción en tareas administrativas</div>
+          </div>
+          <div class="impact-item">
+            <div class="impact-value">40%</div>
+            <div class="impact-label">Mayor precisión en selección</div>
+          </div>
+          <div class="impact-item">
+            <div class="impact-value">3.5x</div>
+            <div class="impact-label">ROI en implementaciones</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Tarjetas principales -->
+    <div class="cards-grid">
+      <!-- Asistente Virtual -->
+      <div class="card" data-sec="sec-virtual">
+        <div class="card-header">
+          <div class="card-icon"><i class="fas fa-comments"></i></div>
+          <div class="card-title">Asistente Virtual de RRHH</div>
+        </div>
+        <div class="card-body">
+          <div class="card-benefit">
+            <span class="benefit-icon"><i class="fas fa-check-circle"></i></span>
+            <span>Respuestas inmediatas 24/7 a consultas frecuentes</span>
+          </div>
+          <div class="card-benefit">
+            <span class="benefit-icon"><i class="fas fa-check-circle"></i></span>
+            <span>Reduce 85% consultas al equipo de RRHH</span>
+          </div>
+          <div class="card-benefit">
+            <span class="benefit-icon"><i class="fas fa-check-circle"></i></span>
+            <span>Brinda respuestas personalizadas según políticas</span>
+          </div>
+          <div class="card-testimonial">
+            "Nuestro equipo ahora dedica tiempo a estrategia en lugar de responder las mismas preguntas una y otra vez."
+            <div class="card-testimonial-author">
+              <i class="fas fa-user-circle"></i> María Sánchez, Gerente RRHH
+            </div>
+          </div>
+        </div>
+        <div class="card-cta">
+          Ver Demostración <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
+
+      <!-- Descripción de Puestos -->
+      <div class="card" data-sec="sec-descripcion">
+        <div class="card-header" style="background: linear-gradient(135deg, #818cf8, #4f46e5);">
+          <div class="card-icon"><i class="fas fa-file-alt"></i></div>
+          <div class="card-title">Generador de Descripciones</div>
+        </div>
+        <div class="card-body">
+          <div class="card-benefit">
+            <span class="benefit-icon"><i class="fas fa-check-circle"></i></span>
+            <span>Crea descripciones detalladas en minutos, no días</span>
+          </div>
+          <div class="card-benefit">
+            <span class="benefit-icon"><i class="fas fa-check-circle"></i></span>
+            <span>Estandariza roles con KPIs precisos</span>
+          </div>
+          <div class="card-benefit">
+            <span class="benefit-icon"><i class="fas fa-check-circle"></i></span>
+            <span>Incluye competencias y objetivos de desarrollo</span>
+          </div>
+          <div class="card-testimonial">
+            "Redujimos el tiempo de creación de perfiles de 3 días a 15 minutos con resultados más completos."
+            <div class="card-testimonial-author">
+              <i class="fas fa-user-circle"></i> Javier Morales, Director de Talento
+            </div>
+          </div>
+        </div>
+        <div class="card-cta">
+          Ver Demostración <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
+
+      <!-- Resumen de Encuestas -->
+      <div class="card" data-sec="sec-encuestas">
+        <div class="card-header" style="background: linear-gradient(135deg, #22d3ee, #0284c7);">
+          <div class="card-icon"><i class="fas fa-chart-pie"></i></div>
+          <div class="card-title">Análisis de Encuestas</div>
+        </div>
+        <div class="card-body">
+          <div class="card-benefit">
+            <span class="benefit-icon"><i class="fas fa-check-circle"></i></span>
+            <span>Analiza miles de respuestas en segundos</span>
+          </div>
+          <div class="card-benefit">
+            <span class="benefit-icon"><i class="fas fa-check-circle"></i></span>
+            <span>Identifica patrones ocultos y sentimientos</span>
+          </div>
+          <div class="card-benefit">
+            <span class="benefit-icon"><i class="fas fa-check-circle"></i></span>
+            <span>Sugiere acciones concretas basadas en datos</span>
+          </div>
+          <div class="card-testimonial">
+            "Descubrimos problemas que no veíamos en nuestros análisis tradicionales y actuamos antes de perder talento."
+            <div class="card-testimonial-author">
+              <i class="fas fa-user-circle"></i> Carolina Vega, CHRO
+            </div>
+          </div>
+        </div>
+        <div class="card-cta">
+          Ver Demostración <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
+
+      <!-- Narrativas de KPIs -->
+      <div class="card" data-sec="sec-narrativas">
+        <div class="card-header" style="background: linear-gradient(135deg, #10b981, #059669);">
+          <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="card-title">Narrativas de Desempeño</div>
+        </div>
+        <div class="card-body">
+          <div class="card-benefit">
+            <span class="benefit-icon"><i class="fas fa-check-circle"></i></span>
+            <span>Transforma datos en narrativas accionables</span>
+          </div>
+          <div class="card-benefit">
+            <span class="benefit-icon"><i class="fas fa-check-circle"></i></span>
+            <span>Destaca logros y oportunidades de desarrollo</span>
+          </div>
+          <div class="card-benefit">
+            <span class="benefit-icon"><i class="fas fa-check-circle"></i></span>
+            <span>Genera planes de desarrollo personalizados</span>
+          </div>
+          <div class="card-testimonial">
+            "Ahora nuestros gerentes tienen conversaciones de desempeño basadas en datos pero con un enfoque humano."
+            <div class="card-testimonial-author">
+              <i class="fas fa-user-circle"></i> Roberto Salas, VP de RRHH
+            </div>
+          </div>
+        </div>
+        <div class="card-cta">
+          Ver Demostración <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
+
+      <!-- Asistente de Reclutamiento -->
+      <div class="card" data-sec="sec-reclutamiento">
+        <div class="card-header" style="background: linear-gradient(135deg, #f97316, #ea580c);">
+          <div class="card-icon"><i class="fas fa-user-check"></i></div>
+          <div class="card-title">Asistente de Reclutamiento</div>
+        </div>
+        <div class="card-body">
+          <div class="card-benefit">
+            <span class="benefit-icon"><i class="fas fa-check-circle"></i></span>
+            <span>Preselecciona candidatos con precisión</span>
+          </div>
+          <div class="card-benefit">
+            <span class="benefit-icon"><i class="fas fa-check-circle"></i></span>
+            <span>Genera preguntas técnicas personalizadas</span>
+          </div>
+          <div class="card-benefit">
+            <span class="benefit-icon"><i class="fas fa-check-circle"></i></span>
+            <span>Reduce tiempo de contratación en 35%</span>
+          </div>
+          <div class="card-testimonial">
+            "Contratamos mejores candidatos en menos tiempo y nuestros reclutadores pueden enfocarse en la conexión humana."
+            <div class="card-testimonial-author">
+              <i class="fas fa-user-circle"></i> Diego Rojas, Talent Acquisition Lead
+            </div>
+          </div>
+        </div>
+        <div class="card-cta">
+          Ver Demostración <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección Asistente Virtual -->
+    <div id="sec-virtual" class="section">
+      <div class="section-header">
+        <h2 class="section-title"><i class="fas fa-comments section-icon"></i> Asistente Virtual de RRHH</h2>
+        <button class="back-button" onclick="hideAllSections()"><i class="fas fa-arrow-left"></i> Volver</button>
+      </div>
+      
+      <div class="dashboard-card">
+        <div class="dashboard-card-header">
+          <div class="dashboard-card-title"><i class="fas fa-lightbulb"></i> ¿Cómo Claude transforma la atención a empleados?</div>
+        </div>
+        <div class="data-grid">
+          <div class="data-item">
+            <div class="data-value">15 min</div>
+            <div class="data-label">Tiempo de respuesta promedio</div>
+          </div>
+          <div class="data-item">
+            <div class="data-value">24/7</div>
+            <div class="data-label">Disponibilidad</div>
+          </div>
+          <div class="data-item">
+            <div class="data-value">93%</div>
+            <div class="data-label">Tasa de resolución</div>
+          </div>
+          <div class="data-item">
+            <div class="data-value">97%</div>
+            <div class="data-label">Satisfacción empleados</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="example-container">
+        <div class="example-title"><i class="fas fa-star"></i> Casos de uso reales</div>
+        <div class="two-columns">
+          <div>
+            <div class="key-feature"><i class="fas fa-check"></i> Consultas de vacaciones y licencias</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Preguntas sobre beneficios y compensaciones</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Asistencia en procesos internos</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Guía sobre políticas y procedimientos</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Soporte en onboarding de empleados</div>
+          </div>
+          <div>
+            <div class="key-feature"><i class="fas fa-check"></i> Ayuda con sistemas internos</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Información sobre capacitaciones</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Asistencia con documentación</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Orientación en planes de carrera</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Resolución de dudas frecuentes</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <button onclick="simulateVacation()" class="btn-secondary"><i class="fas fa-calendar-alt"></i> Simular: Consulta de Vacaciones</button>
+        <button onclick="simulateCollective()" class="btn-accent"><i class="fas fa-file-contract"></i> Simular: Consulta Convenio Colectivo</button>
+      </div>
+      
+      <div class="output" id="chatOutput">
+        <div class="output-title"><i class="fas fa-comment-dots"></i> Simulación de conversación</div>
+        <p>Seleccione una de las demostraciones anteriores para ver cómo Claude puede ayudar a resolver consultas comunes de empleados de forma rápida y eficiente.</p>
+      </div>
+    </div>
+
+    <!-- Sección Descripción de Puestos -->
+    <div id="sec-descripcion" class="section">
+      <div class="section-header">
+        <h2 class="section-title"><i class="fas fa-file-alt section-icon"></i> Generador de Descripciones de Puestos</h2>
+        <button class="back-button" onclick="hideAllSections()"><i class="fas fa-arrow-left"></i> Volver</button>
+      </div>
+      
+      <div class="dashboard-card">
+        <div class="dashboard-card-header">
+          <div class="dashboard-card-title"><i class="fas fa-lightbulb"></i> Impacto en su organización</div>
+        </div>
+        <div class="data-grid">
+          <div class="data-item">
+            <div class="data-value">85%</div>
+            <div class="data-label">Reducción de tiempo</div>
+          </div>
+          <div class="data-item">
+            <div class="data-value">92%</div>
+            <div class="data-label">Consistencia entre roles</div>
+          </div>
+          <div class="data-item">
+            <div class="data-value">40%</div>
+            <div class="data-label">Mejora en clasificación</div>
+          </div>
+          <div class="data-item">
+            <div class="data-value">3.2x</div>
+            <div class="data-label">ROI demostrado</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="example-container">
+        <div class="example-title"><i class="fas fa-star"></i> Contenido generado automáticamente</div>
+        <div class="two-columns">
+          <div>
+            <div class="key-feature"><i class="fas fa-check"></i> Responsabilidades del puesto detalladas</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Competencias técnicas y blandas</div>
+            <div class="key-feature"><i class="fas fa-check"></i> KPIs y métricas de desempeño</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Requisitos de formación y experiencia</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Trayectoria de carrera sugerida</div>
+          </div>
+          <div>
+            <div class="key-feature"><i class="fas fa-check"></i> Alineación con valores corporativos</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Relaciones clave internas/externas</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Criterios de evaluación del desempeño</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Oportunidades de desarrollo profesional</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Requerimientos de compliance por industria</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <input type="text" id="jobTitle" placeholder="Ingresa el título del puesto, ej: Analista de Datos" />
+        <select id="jobLevel">
+          <option value="junior">Junior</option>
+          <option value="senior" selected>Senior</option>
+          <option value="lead">Lead</option>
+        </select>
+        <select id="jobArea">
+          <option value="tech">Tecnología</option>
+          <option value="finance">Finanzas</option>
+          <option value="marketing">Marketing</option>
+          <option value="hr">Recursos Humanos</option>
+        </select>
+        <button onclick="generateDescription()"><i class="fas fa-magic"></i> Generar</button>
+      </div>
+      
+      <div class="output" id="descOutput">
+        <div class="output-title"><i class="fas fa-file-alt"></i> Descripción generada</div>
+        <p>Ingrese un título de puesto y seleccione el nivel y área para generar una descripción completa y lista para usar.</p>
+      </div>
+    </div>
+
+    <!-- Sección Resumen de Encuestas -->
+    <div id="sec-encuestas" class="section">
+      <div class="section-header">
+        <h2 class="section-title"><i class="fas fa-chart-pie section-icon"></i> Análisis Inteligente de Encuestas</h2>
+        <button class="back-button" onclick="hideAllSections()"><i class="fas fa-arrow-left"></i> Volver</button>
+      </div>
+      
+      <div class="dashboard-card">
+        <div class="dashboard-card-header">
+          <div class="dashboard-card-title"><i class="fas fa-lightbulb"></i> Transforme datos en acciones</div>
+        </div>
+        <div class="data-grid">
+          <div class="data-item">
+            <div class="data-value">5,000+</div>
+            <div class="data-label">Comentarios analizados</div>
+          </div>
+          <div class="data-item">
+            <div class="data-value">98%</div>
+            <div class="data-label">Precisión temática</div>
+          </div>
+          <div class="data-item">
+            <div class="data-value">12+</div>
+            <div class="data-label">Idiomas soportados</div>
+          </div>
+          <div class="data-item">
+            <div class="data-value">3 min</div>
+            <div class="data-label">Tiempo promedio análisis</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="example-container">
+        <div class="example-title"><i class="fas fa-star"></i> Capacidades analíticas</div>
+        <div class="two-columns">
+          <div>
+            <div class="key-feature"><i class="fas fa-check"></i> Análisis de sentimiento por tema</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Identificación de temas emergentes</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Detección temprana de problemas</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Comparativa histórica de satisfacción</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Puntos específicos de mejora por área</div>
+          </div>
+          <div>
+            <div class="key-feature"><i class="fas fa-check"></i> Benchmarking por departamentos</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Correlación con indicadores de negocio</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Seguimiento de planes de acción previos</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Sugerencias de acciones concretas</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Generación de reportes ejecutivos</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <select id="surveyType">
+          <option value="climate">Clima Laboral</option>
+          <option value="engagement">Engagement</option>
+          <option value="satisfaction">Satisfacción Empleados</option>
+          <option value="exit">Entrevistas de Salida</option>
+        </select>
+        <select id="surveyDept">
+          <option value="all">Toda la Empresa</option>
+          <option value="tech">Tecnología</option>
+          <option value="sales">Ventas</option>
+          <option value="operations">Operaciones</option>
+        </select>
+        <button onclick="summarizeSurvey()"><i class="fas fa-analytics"></i> Analizar Comentarios</button>
+      </div>
+      
+      <div class="output" id="surveyOutput">
+        <div class="output-title"><i class="fas fa-chart-bar"></i> Resultados del análisis</div>
+        <p>Seleccione el tipo de encuesta y departamento para obtener un análisis completo de los comentarios.</p>
+      </div>
+    </div>
+
+    <!-- Sección Narrativas de KPIs -->
+    <div id="sec-narrativas" class="section">
+      <div class="section-header">
+        <h2 class="section-title"><i class="fas fa-chart-line section-icon"></i> Narrativas Inteligentes de Desempeño</h2>
+        <button class="back-button" onclick="hideAllSections()"><i class="fas fa-arrow-left"></i> Volver</button>
+      </div>
+      
+      <div class="dashboard-card">
+        <div class="dashboard-card-header">
+          <div class="dashboard-card-title"><i class="fas fa-lightbulb"></i> Datos transformados en historias</div>
+        </div>
+        <div class="data-grid">
+          <div class="data-item">
+            <div class="data-value">65%</div>
+            <div class="data-label">Ahorro en tiempo de gestión</div>
+          </div>
+          <div class="data-item">
+            <div class="data-value">42%</div>
+            <div class="data-label">Mejor recepción feedback</div>
+          </div>
+          <div class="data-item">
+            <div class="data-value">78%</div>
+            <div class="data-label">Planes desarrollo efectivos</div>
+          </div>
+          <div class="data-item">
+            <div class="data-value">2.8x</div>
+            <div class="data-label">Aumento en engagement</div>
+          </div>
+        </div>
+      </div>
+      
+      <table id="empTable">
+        <thead>
+          <tr>
+            <th><i class="fas fa-user"></i> Empleado</th>
+            <th><i class="fas fa-brain"></i> Competencia 1</th>
+            <th><i class="fas fa-brain"></i> Competencia 2</th>
+            <th><i class="fas fa-arrow-up"></i> Mejora</th>
+            <th><i class="fas fa-tasks"></i> Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr onclick="showNarrative('Juan Pérez')">
+            <td><strong>Juan Pérez</strong><br><span style="font-size: 0.8em; color: var(--grey-dark);">Analista de Datos</span></td>
+            <td>Visualización</td>
+            <td>Análisis</td>
+            <td><span class="badge badge-success">+20%</span></td>
+            <td><span class="badge badge-info">Destacado</span></td>
+          </tr>
+          <tr onclick="showNarrative('María Gómez')">
+            <td><strong>María Gómez</strong><br><span style="font-size: 0.8em; color: var(--grey-dark);">Coordinadora de Proyectos</span></td>
+            <td>Gestión de Proyectos</td>
+            <td>Comunicación</td>
+            <td><span class="badge badge-info">+12%</span></td>
+            <td><span class="badge badge-info">Cumple</span></td>
+          </tr>
+          <tr onclick="showNarrative('Carlos Díaz')">
+            <td><strong>Carlos Díaz</strong><br><span style="font-size: 0.8em; color: var(--grey-dark);">Ingeniero de Software</span></td>
+            <td>Calidad de Código</td>
+            <td>Documentación</td>
+            <td><span class="badge badge-success">+25%</span></td>
+            <td><span class="badge badge-success">Excepcional</span></td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <div class="output" id="narrativeOutput">
+        <div class="output-title"><i class="fas fa-user-chart"></i> Narrativa de desempeño</div>
+        <p>Haga clic en un empleado de la tabla para ver su narrativa de desempeño personalizada basada en datos.</p>
+      </div>
+      
+      <canvas id="chartNarrativasComparativo"></canvas>
+    </div>
+
+    <!-- Sección Asistente de Reclutamiento -->
+    <div id="sec-reclutamiento" class="section">
+      <div class="section-header">
+        <h2 class="section-title"><i class="fas fa-user-check section-icon"></i> Asistente Inteligente de Reclutamiento</h2>
+        <button class="back-button" onclick="hideAllSections()"><i class="fas fa-arrow-left"></i> Volver</button>
+      </div>
+      
+      <div class="dashboard-card">
+        <div class="dashboard-card-header">
+          <div class="dashboard-card-title"><i class="fas fa-lightbulb"></i> Reclutamiento optimizado con IA</div>
+        </div>
+        <div class="data-grid">
+          <div class="data-item">
+            <div class="data-value">75%</div>
+            <div class="data-label">Menos tiempo screening</div>
+          </div>
+          <div class="data-item">
+            <div class="data-value">45%</div>
+            <div class="data-label">Mejor match al puesto</div>
+          </div>
+          <div class="data-item">
+            <div class="data-value">35%</div>
+            <div class="data-label">Reducción en rotación</div>
+          </div>
+          <div class="data-item">
+            <div class="data-value">3.5x</div>
+            <div class="data-label">ROI en proceso completo</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="example-container">
+        <div class="example-title"><i class="fas fa-star"></i> Funcionalidades principales</div>
+        <div class="two-columns">
+          <div>
+            <div class="key-feature"><i class="fas fa-check"></i> Evaluación inteligente de CVs</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Generación de preguntas técnicas</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Análisis de adecuación cultural</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Detección de habilidades ocultas</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Predicción de permanencia</div>
+          </div>
+          <div>
+            <div class="key-feature"><i class="fas fa-check"></i> Elaboración de informes de entrevista</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Comparativa entre candidatos</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Evaluación de soft skills</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Detección de inconsistencias</div>
+            <div class="key-feature"><i class="fas fa-check"></i> Recomendaciones de contratación</div>
+          </div>
+        </div>
+      </div>
+      
+      <table id="candTable">
+        <thead>
+          <tr>
+            <th><i class="fas fa-user"></i> Candidato</th>
+            <th><i class="fas fa-briefcase"></i> Posición</th>
+            <th><i class="fas fa-history"></i> Experiencia</th>
+            <th><i class="fas fa-check-circle"></i> Match</th>
+            <th><i class="fas fa-flag"></i> Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr onclick="showCandidate('Ana Ruiz')">
+            <td><strong>Ana Ruiz</strong></td>
+            <td>Analista de BI</td>
+            <td>5 años</td>
+            <td><span class="badge badge-success">85%</span></td>
+            <td><span class="badge badge-info">Preentrevista</span></td>
+          </tr>
+          <tr onclick="showCandidate('Luis Torres')">
+            <td><strong>Luis Torres</strong></td>
+            <td>Gerente Comercial</td>
+            <td>3 años</td>
+            <td><span class="badge badge-info">72%</span></td>
+            <td><span class="badge badge-warning">Técnica</span></td>
+          </tr>
+          <tr onclick="showCandidate('Sofía Castro')">
+            <td><strong>Sofía Castro</strong></td>
+            <td>Contadora Senior</td>
+            <td>7 años</td>
+            <td><span class="badge badge-success">91%</span></td>
+            <td><span class="badge badge-success">Final</span></td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <div class="output" id="recruitmentOutput">
+        <div class="output-title"><i class="fas fa-user-plus"></i> Análisis de candidato</div>
+        <p>Haga clic en un candidato de la tabla para ver su análisis detallado y preguntas recomendadas.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-title">¿Listo para transformar su estrategia de RRHH?</div>
+        <p>Descubra cómo Claude puede ayudar a su equipo a enfocarse en lo que realmente importa: el factor humano de Recursos Humanos.</p>
+        <a href="#" class="cta-button">Solicite una demostración personalizada</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Navegación entre secciones
+    document.querySelectorAll('.card').forEach(el => el.addEventListener('click', () => {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(el.dataset.sec).classList.add('active');
+      window.scrollTo({ top: document.getElementById(el.dataset.sec).offsetTop - 20, behavior: 'smooth' });
+    }));
+    
+    function hideAllSections() {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Asistente Virtual
+    function simulateVacation() {
+      const out = document.getElementById('chatOutput');
+      out.innerHTML = '<div class="output-title"><i class="fas fa-comment-dots"></i> Conversación sobre vacaciones</div>';
+      
+      const chatContainer = document.createElement('div');
+      chatContainer.className = 'chat-container';
+      out.appendChild(chatContainer);
+      
+      const messages = [
+        {role: 'user', content: '¿Cuántos días de vacaciones me corresponden este año? Llevo 5 años en la empresa.'},
+        {role: 'assistant', content: 'Con 5 años de antigüedad en la empresa, te corresponden 15 días hábiles de vacaciones según nuestra política interna. Este cálculo está basado en la escala progresiva que incrementa 1 día por cada año trabajado después del tercer año.'},
+        {role: 'user', content: 'Gracias. Tuve una licencia médica en marzo por 2 semanas, ¿eso afecta mis días de vacaciones?'},
+        {role: 'assistant', content: 'Las licencias médicas debidamente documentadas no reducen tu saldo de vacaciones. Tu período de ausencia por razones médicas en marzo no impacta tus 15 días hábiles. La ley establece que las licencias médicas suspenden temporalmente la relación laboral pero no afectan la acumulación de beneficios como las vacaciones.'},
+        {role: 'user', content: 'Perfecto, ¿cómo puedo solicitarlas? Quiero tomarlas en septiembre.'},
+        {role: 'assistant', content: 'Para solicitar tus vacaciones para septiembre, debes seguir estos pasos:\n\n1. Ingresa al portal de RRHH (portal.empresa.com)\n2. Accede a la sección "Solicitudes de Permisos"\n3. Selecciona "Solicitud de Vacaciones"\n4. Indica las fechas deseadas (septiembre)\n5. Tu supervisor recibirá una notificación y deberá aprobarla\n\nTe recomiendo hacerlo con al menos 30 días de anticipación para asegurar la aprobación. ¿Necesitas ayuda con algún paso específico del proceso?'}
+      ];
+      
+      let i = 0;
+      function addNextMessage() {
+        if (i < messages.length) {
+          const msg = messages[i];
+          const msgDiv = document.createElement('div');
+          msgDiv.className = `chat-message ${msg.role}`;
+          
+          const avatar = document.createElement('div');
+          avatar.className = `avatar ${msg.role}`;
+          avatar.innerHTML = msg.role === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+          
+          const content = document.createElement('div');
+          content.className = 'message-content';
+          content.innerText = msg.content;
+          
+          msgDiv.appendChild(avatar);
+          msgDiv.appendChild(content);
+          chatContainer.appendChild(msgDiv);
+          
+          i++;
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+          
+          if (i < messages.length) {
+            if (messages[i].role === 'assistant') {
+              // Mostrar indicador de escritura
+              const typingDiv = document.createElement('div');
+              typingDiv.className = 'chat-message assistant';
+              
+              const typingAvatar = document.createElement('div');
+              typingAvatar.className = 'avatar assistant';
+              typingAvatar.innerHTML = '<i class="fas fa-robot"></i>';
+              
+              const typingContent = document.createElement('div');
+              typingContent.className = 'message-content';
+              typingContent.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+              
+              typingDiv.appendChild(typingAvatar);
+              typingDiv.appendChild(typingContent);
+              chatContainer.appendChild(typingDiv);
+              
+              setTimeout(() => {
+                chatContainer.removeChild(typingDiv);
+                setTimeout(addNextMessage, 500);
+              }, 1500);
+            } else {
+              setTimeout(addNextMessage, 1000);
+            }
+          } else {
+            // Mostrar botón de acción al final
+            setTimeout(() => {
+              const actionDiv = document.createElement('div');
+              actionDiv.className = 'action-buttons';
+              actionDiv.innerHTML = '<button class="btn-secondary"><i class="fas fa-calendar-check"></i> Solicitar Vacaciones</button><button><i class="fas fa-info-circle"></i> Ver Política Completa</button>';
+              out.appendChild(actionDiv);
+            }, 1000);
+          }
+        }
+      }
+      
+      addNextMessage();
+    }
+
+    function simulateCollective() {
+      const out = document.getElementById('chatOutput');
+      out.innerHTML = '<div class="output-title"><i class="fas fa-comment-dots"></i> Consulta sobre convenio colectivo</div>';
+      
+      const chatContainer = document.createElement('div');
+      chatContainer.className = 'chat-container';
+      out.appendChild(chatContainer);
+      
+      const messages = [
+        {role: 'user', content: '¿Cuándo inicia nuestro próximo convenio colectivo?'},
+        {role: 'assistant', content: 'El próximo convenio colectivo de nuestra empresa entra en vigor el 1 de julio de 2025. El actual convenio finaliza el 30 de junio de 2025, y las negociaciones para el nuevo acuerdo comenzarán en mayo, aproximadamente 2 meses antes del vencimiento, siguiendo nuestro protocolo habitual.'},
+        {role: 'user', content: '¿Qué beneficios importantes incluirá este nuevo convenio?'},
+        {role: 'assistant', content: 'El nuevo convenio colectivo 2025-2027 incluirá estos beneficios destacados:\n\n• Aumento salarial del 3% anual (ajustable según IPC)\n• Bono anual de $200.000 por cumplimiento de objetivos\n• Reducción de jornada en 2 horas los viernes\n• 3 días adicionales de permiso personal\n• Aumento en subsidio de alimentación (25%)\n• Mejoras en el seguro complementario de salud\n• Plan de desarrollo profesional con capacitaciones certificadas\n\nEstos puntos han sido preliminarmente acordados, aunque podrían existir ajustes durante las negociaciones finales.'},
+        {role: 'user', content: '¿Dónde puedo revisar una copia del convenio actual y cuándo estará disponible el nuevo?'},
+        {role: 'assistant', content: 'Para acceder al convenio actual y estar informado sobre el próximo:\n\n𝗖𝗼𝗻𝘃𝗲𝗻𝗶𝗼 𝗮𝗰𝘁𝘂𝗮𝗹:\n• Portal interno → sección "Documentos Legales" → carpeta "Convenios Colectivos"\n• Intranet → "Recursos Humanos" → "Normativa Laboral"\n• También puedes solicitarlo directamente a tu representante sindical\n\n𝗡𝘂𝗲𝘃𝗼 𝗰𝗼𝗻𝘃𝗲𝗻𝗶𝗼:\n• Estará disponible a partir del 15 de junio de 2025 (versión preliminar)\n• Recibirás una notificación por correo cuando se publique\n• Se realizarán sesiones informativas departamentales a partir del 20 de junio\n\n¿Necesitas información adicional sobre algún aspecto específico del convenio?'}
+      ];
+      
+      let i = 0;
+      function addNextMessage() {
+        if (i < messages.length) {
+          const msg = messages[i];
+          const msgDiv = document.createElement('div');
+          msgDiv.className = `chat-message ${msg.role}`;
+          
+          const avatar = document.createElement('div');
+          avatar.className = `avatar ${msg.role}`;
+          avatar.innerHTML = msg.role === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+          
+          const content = document.createElement('div');
+          content.className = 'message-content';
+          content.innerText = msg.content;
+          
+          msgDiv.appendChild(avatar);
+          msgDiv.appendChild(content);
+          chatContainer.appendChild(msgDiv);
+          
+          i++;
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+          
+          if (i < messages.length) {
+            if (messages[i].role === 'assistant') {
+              // Mostrar indicador de escritura
+              const typingDiv = document.createElement('div');
+              typingDiv.className = 'chat-message assistant';
+              
+              const typingAvatar = document.createElement('div');
+              typingAvatar.className = 'avatar assistant';
+              typingAvatar.innerHTML = '<i class="fas fa-robot"></i>';
+              
+              const typingContent = document.createElement('div');
+              typingContent.className = 'message-content';
+              typingContent.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+              
+              typingDiv.appendChild(typingAvatar);
+              typingDiv.appendChild(typingContent);
+              chatContainer.appendChild(typingDiv);
+              
+              setTimeout(() => {
+                chatContainer.removeChild(typingDiv);
+                setTimeout(addNextMessage, 500);
+              }, 1500);
+            } else {
+              setTimeout(addNextMessage, 1000);
+            }
+          } else {
+            // Mostrar botón de acción al final
+            setTimeout(() => {
+              const actionDiv = document.createElement('div');
+              actionDiv.className = 'action-buttons';
+              actionDiv.innerHTML = '<button class="btn-secondary"><i class="fas fa-file-download"></i> Descargar Convenio Actual</button><button><i class="fas fa-calendar-check"></i> Agendar Sesión Informativa</button>';
+              out.appendChild(actionDiv);
+            }, 1000);
+          }
+        }
+      }
+      
+      addNextMessage();
+    }
+
+    // Generador de Descripción de Puestos
+    function generateDescription() {
+      const title = document.getElementById('jobTitle').value || "Analista de Datos";
+      const level = document.getElementById('jobLevel').value;
+      const area = document.getElementById('jobArea').value;
+      const out = document.getElementById('descOutput');
+      
+      out.innerHTML = '<div class="output-title"><i class="fas fa-file-alt"></i> Descripción generada para: ' + title + '</div>';
+      
+      // Mostrar animación de carga
+      const loading = document.createElement('div');
+      loading.className = 'loading';
+      loading.innerHTML = '<div></div><div></div><div></div><div></div>';
+      out.appendChild(loading);
+      
+      setTimeout(() => {
+        out.removeChild(loading);
+        
+        let description = '';
+        
+        if (title.toLowerCase().includes('datos') || title.toLowerCase().includes('data')) {
+          description = `<div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">${title} - ${level.charAt(0).toUpperCase() + level.slice(1)}</div>
+            </div>
+            
+            <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-info-circle"></i> Descripción General</h4>
+            <p>El ${title} ${level} es responsable de extraer, procesar y analizar grandes volúmenes de datos empresariales para generar insights accionables que impulsen decisiones estratégicas. Este rol requiere un profundo conocimiento técnico en herramientas de análisis, visualización y modelado de datos, combinado con la capacidad de comunicar hallazgos complejos a diferentes audiencias.</p>
+            
+            <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-tasks"></i> Responsabilidades Clave</h4>
+            <ul style="list-style-type: none; padding-left: 0;">
+              <li><i class="fas fa-check-circle" style="color: var(--primary);"></i> Diseñar y mantener dashboards interactivos para monitoreo continuo de KPIs</li>
+              <li><i class="fas fa-check-circle" style="color: var(--primary);"></i> Implementar modelos predictivos para identificar tendencias y oportunidades</li>
+              <li><i class="fas fa-check-circle" style="color: var(--primary);"></i> Automatizar procesos de ETL para optimizar flujos de datos</li>
+              <li><i class="fas fa-check-circle" style="color: var(--primary);"></i> Colaborar con equipos multidisciplinarios para entender necesidades analíticas</li>
+              <li><i class="fas fa-check-circle" style="color: var(--primary);"></i> Desarrollar informes ejecutivos destacando insights clave</li>
+            </ul>
+            
+            <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-brain"></i> Competencias Técnicas</h4>
+            <div class="skills-container">
+              <span class="skill-badge"><i class="fas fa-chart-bar"></i> SQL Avanzado</span>
+              <span class="skill-badge"><i class="fas fa-code"></i> Python</span>
+              <span class="skill-badge"><i class="fas fa-chart-line"></i> Visualización (PowerBI/Tableau)</span>
+              <span class="skill-badge"><i class="fas fa-database"></i> Gestión de Bases de Datos</span>
+              <span class="skill-badge"><i class="fas fa-brain"></i> Modelos Estadísticos</span>
+              <span class="skill-badge"><i class="fas fa-project-diagram"></i> ETL</span>
+            </div>
+            
+            <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-user-chart"></i> KPIs de Desempeño</h4>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Precisión en modelos predictivos</span>
+                <span>95%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 95%;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Reducción en tiempo de generación de informes</span>
+                <span>60%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 60%;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Implementación de proyectos en tiempo</span>
+                <span>80%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 80%;"></div>
+              </div>
+            </div>
+            
+            <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-graduation-cap"></i> Trayectoria y Desarrollo</h4>
+            <p>Este rol permite evolucionar hacia posiciones como Data Science Lead, Analytics Manager o Business Intelligence Director. Se recomienda desarrollo en inteligencia artificial, gestión de equipos y estrategia de datos.</p>
+          </div>`;
+        } else if (title.toLowerCase().includes('ingeniero') || title.toLowerCase().includes('desarrollador') || title.toLowerCase().includes('software')) {
+          description = `<div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">${title} - ${level.charAt(0).toUpperCase() + level.slice(1)}</div>
+            </div>
+            
+            <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-info-circle"></i> Descripción General</h4>
+            <p>El rol de ${title} ${level} implica diseñar, desarrollar, probar y mantener aplicaciones críticas para el negocio. Este profesional debe combinar sólidos conocimientos técnicos con entendimiento de procesos de negocio, trabajando en entornos ágiles y colaborativos.</p>
+            
+            <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-tasks"></i> Responsabilidades Clave</h4>
+            <ul style="list-style-type: none; padding-left: 0;">
+              <li><i class="fas fa-check-circle" style="color: var(--primary);"></i> Diseñar e implementar arquitecturas escalables para aplicaciones</li>
+              <li><i class="fas fa-check-circle" style="color: var(--primary);"></i> Desarrollar código limpio, eficiente y bien documentado</li>
+              <li><i class="fas fa-check-circle" style="color: var(--primary);"></i> Implementar pruebas unitarias y de integración</li>
+              <li><i class="fas fa-check-circle" style="color: var(--primary);"></i> Participar en revisiones de código y mentorías técnicas</li>
+              <li><i class="fas fa-check-circle" style="color: var(--primary);"></i> Optimizar rendimiento y seguridad de aplicaciones</li>
+            </ul>
+            
+            <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-brain"></i> Competencias Técnicas</h4>
+            <div class="skills-container">
+              <span class="skill-badge"><i class="fas fa-code"></i> Java/Python/.NET</span>
+              <span class="skill-badge"><i class="fas fa-server"></i> Microservicios</span>
+              <span class="skill-badge"><i class="fas fa-code-branch"></i> Git/CI/CD</span>
+              <span class="skill-badge"><i class="fas fa-shield-alt"></i> Seguridad</span>
+              <span class="skill-badge"><i class="fas fa-tachometer-alt"></i> Optimización</span>
+              <span class="skill-badge"><i class="fas fa-cloud"></i> Cloud (AWS/Azure)</span>
+            </div>
+            
+            <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-user-chart"></i> KPIs de Desempeño</h4>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Calidad de código (bajo defectos)</span>
+                <span>90%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 90%;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Entrega a tiempo de funcionalidades</span>
+                <span>85%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 85%;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Cobertura de pruebas automatizadas</span>
+                <span>75%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 75%;"></div>
+              </div>
+            </div>
+            
+            <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-graduation-cap"></i> Trayectoria y Desarrollo</h4>
+            <p>Oportunidades de desarrollo hacia posiciones de Arquitecto de Software, Tech Lead o Engineering Manager, con enfoque en profundización técnica y desarrollo de habilidades de liderazgo.</p>
+          </div>`;
+        } else {
+          description = `<div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">${title} - ${level.charAt(0).toUpperCase() + level.slice(1)}</div>
+            </div>
+            
+            <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-info-circle"></i> Descripción General</h4>
+            <p>El rol de ${title} ${level} implica gestionar objetivos estratégicos, analizar información crítica y colaborar eficazmente con múltiples departamentos para impulsar el crecimiento y la eficiencia organizacional. Este profesional combina experiencia técnica con visión estratégica.</p>
+            
+            <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-tasks"></i> Responsabilidades Clave</h4>
+            <ul style="list-style-type: none; padding-left: 0;">
+              <li><i class="fas fa-check-circle" style="color: var(--primary);"></i> Desarrollar estrategias alineadas con objetivos corporativos</li>
+              <li><i class="fas fa-check-circle" style="color: var(--primary);"></i> Liderar iniciativas interdepartamentales</li>
+              <li><i class="fas fa-check-circle" style="color: var(--primary);"></i> Analizar datos para identificar oportunidades de mejora</li>
+              <li><i class="fas fa-check-circle" style="color: var(--primary);"></i> Optimizar procesos para aumentar eficiencia operacional</li>
+              <li><i class="fas fa-check-circle" style="color: var(--primary);"></i> Desarrollar reportes ejecutivos con recomendaciones accionables</li>
+            </ul>
+            
+            <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-brain"></i> Competencias Clave</h4>
+            <div class="skills-container">
+              <span class="skill-badge"><i class="fas fa-chart-line"></i> Análisis Estratégico</span>
+              <span class="skill-badge"><i class="fas fa-users"></i> Liderazgo</span>
+              <span class="skill-badge"><i class="fas fa-project-diagram"></i> Gestión de Proyectos</span>
+              <span class="skill-badge"><i class="fas fa-comments"></i> Comunicación Efectiva</span>
+              <span class="skill-badge"><i class="fas fa-lightbulb"></i> Resolución de Problemas</span>
+              <span class="skill-badge"><i class="fas fa-handshake"></i> Negociación</span>
+            </div>
+            
+            <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-user-chart"></i> KPIs de Desempeño</h4>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Cumplimiento de objetivos estratégicos</span>
+                <span>85%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 85%;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Optimización de recursos y costos</span>
+                <span>70%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 70%;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Satisfacción de stakeholders internos</span>
+                <span>90%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 90%;"></div>
+              </div>
+            </div>
+            
+            <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-graduation-cap"></i> Trayectoria y Desarrollo</h4>
+            <p>Este rol puede evolucionar hacia posiciones directivas con mayor alcance estratégico. Se recomienda desarrollo en liderazgo ejecutivo, gestión del cambio y análisis avanzado de negocio.</p>
+          </div>`;
+        }
+        
+        out.innerHTML += description;
+        
+        const actionDiv = document.createElement('div');
+        actionDiv.className = 'action-buttons';
+        actionDiv.innerHTML = '<button class="btn-secondary"><i class="fas fa-download"></i> Descargar Descripción</button><button><i class="fas fa-edit"></i> Personalizar</button>';
+        out.appendChild(actionDiv);
+      }, 2000);
+    }
+
+    // Resumen de Encuestas
+    function summarizeSurvey() {
+      const surveyType = document.getElementById('surveyType').value;
+      const dept = document.getElementById('surveyDept').value;
+      const out = document.getElementById('surveyOutput');
+      
+      out.innerHTML = `<div class="output-title"><i class="fas fa-chart-bar"></i> Resultados de la encuesta de ${surveyType === 'climate' ? 'Clima Laboral' : surveyType === 'engagement' ? 'Engagement' : surveyType === 'satisfaction' ? 'Satisfacción' : 'Entrevistas de Salida'} - ${dept === 'all' ? 'Toda la Empresa' : dept === 'tech' ? 'Tecnología' : dept === 'sales' ? 'Ventas' : 'Operaciones'}</div>`;
+      
+      // Mostrar animación de carga
+      const loading = document.createElement('div');
+      loading.className = 'loading';
+      loading.innerHTML = '<div></div><div></div><div></div><div></div>';
+      out.appendChild(loading);
+      
+      setTimeout(() => {
+        out.removeChild(loading);
+        
+        let result = '';
+        
+        if (surveyType === 'climate' || surveyType === 'engagement') {
+          result = `<div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">Resumen Ejecutivo</div>
+            </div>
+            
+            <div class="data-grid">
+              <div class="data-item">
+                <div class="data-value">72%</div>
+                <div class="data-label">Sentimiento positivo</div>
+              </div>
+              <div class="data-item">
+                <div class="data-value">18%</div>
+                <div class="data-label">Sentimiento neutral</div>
+              </div>
+              <div class="data-item">
+                <div class="data-value">10%</div>
+                <div class="data-label">Sentimiento negativo</div>
+              </div>
+              <div class="data-item">
+                <div class="data-value">+5%</div>
+                <div class="data-label">vs periodo anterior</div>
+              </div>
+            </div>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-star"></i> Temas Principales</h4>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Carga de trabajo y balance</span>
+                <span>45%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 45%; background: #10b981;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Capacitación y desarrollo</span>
+                <span>30%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 30%; background: #6366f1;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Comunicación interna</span>
+                <span>25%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 25%; background: #f97316;"></div>
+              </div>
+            </div>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-comment-dots"></i> Verbatims destacados</h4>
+            <div style="border-left: 3px solid var(--primary); padding-left: 15px; margin: 15px 0;">
+              "Aprecio las oportunidades de aprendizaje, pero necesitamos más tiempo protegido para dedicarnos a la capacitación."
+            </div>
+            <div style="border-left: 3px solid var(--success); padding-left: 15px; margin: 15px 0;">
+              "El nuevo sistema de reconocimiento ha tenido un impacto positivo en mi motivación y la de mi equipo."
+            </div>
+            <div style="border-left: 3px solid var(--warning); padding-left: 15px; margin: 15px 0;">
+              "A veces los objetivos cambian sin comunicación clara, lo que genera confusión y retrabajos."
+            </div>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-lightbulb"></i> Recomendaciones principales</h4>
+            <ol style="padding-left: 20px;">
+              <li><strong>Implementar un programa de bienestar</strong> enfocado en manejo de estrés y balance trabajo-vida.</li>
+              <li><strong>Mejorar la comunicación de cambios estratégicos</strong> con sesiones periódicas de Q&A con liderazgo.</li>
+              <li><strong>Establecer horas protegidas para capacitación</strong> (mínimo 4 horas semanales).</li>
+              <li><strong>Crear comunidades de práctica interdepartamentales</strong> para compartir conocimientos.</li>
+            </ol>
+          </div>`;
+        } else if (surveyType === 'satisfaction') {
+          result = `<div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">Resumen Ejecutivo</div>
+            </div>
+            
+            <div class="data-grid">
+              <div class="data-item">
+                <div class="data-value">7.8</div>
+                <div class="data-label">Satisfacción promedio</div>
+              </div>
+              <div class="data-item">
+                <div class="data-value">8.2</div>
+                <div class="data-label">eNPS</div>
+              </div>
+              <div class="data-item">
+                <div class="data-value">82%</div>
+                <div class="data-label">Tasa de participación</div>
+              </div>
+              <div class="data-item">
+                <div class="data-value">+0.4</div>
+                <div class="data-label">vs año anterior</div>
+              </div>
+            </div>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-star"></i> Áreas de Mayor Satisfacción</h4>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Ambiente laboral y compañerismo</span>
+                <span>8.7</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 87%; background: #10b981;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Liderazgo y accesibilidad</span>
+                <span>8.2</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 82%; background: #10b981;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Oportunidades de aprendizaje</span>
+                <span>7.9</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 79%; background: #6366f1;"></div>
+              </div>
+            </div>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-exclamation-triangle"></i> Áreas de Oportunidad</h4>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Compensación y beneficios</span>
+                <span>6.4</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 64%; background: #f97316;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Equilibrio trabajo-vida</span>
+                <span>6.8</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 68%; background: #f97316;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Reconocimiento</span>
+                <span>7.1</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 71%; background: #f97316;"></div>
+              </div>
+            </div>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-lightbulb"></i> Plan de Acción Recomendado</h4>
+            <ol style="padding-left: 20px;">
+              <li><strong>Revisar política de compensación</strong> comparando con benchmarks de mercado (Q2 2025).</li>
+              <li><strong>Implementar programa de "Viernes Cortos"</strong> durante temporada de menor demanda.</li>
+              <li><strong>Lanzar programa de reconocimiento peer-to-peer</strong> con incentivos trimestrales.</li>
+              <li><strong>Establecer mejores prácticas</strong> para reuniones y comunicación asincrónica.</li>
+            </ol>
+          </div>`;
+        } else {
+          result = `<div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">Análisis de Entrevistas de Salida</div>
+            </div>
+            
+            <div class="data-grid">
+              <div class="data-item">
+                <div class="data-value">15%</div>
+                <div class="data-label">Tasa de rotación anual</div>
+              </div>
+              <div class="data-item">
+                <div class="data-value">82%</div>
+                <div class="data-label">Participación en entrevistas</div>
+              </div>
+              <div class="data-item">
+                <div class="data-value">68%</div>
+                <div class="data-label">Rotación voluntaria</div>
+              </div>
+              <div class="data-item">
+                <div class="data-value">32%</div>
+                <div class="data-label">Rotación involuntaria</div>
+              </div>
+            </div>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-sign-out-alt"></i> Principales Razones de Salida</h4>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Oportunidades de crecimiento</span>
+                <span>38%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 38%; background: #f97316;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Compensación</span>
+                <span>25%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 25%; background: #f97316;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Carga laboral</span>
+                <span>18%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 18%; background: #6366f1;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Relación con supervisor</span>
+                <span>12%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 12%; background: #6366f1;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Otros factores</span>
+                <span>7%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 7%; background: #10b981;"></div>
+              </div>
+            </div>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-comment-dots"></i> Comentarios representativos</h4>
+            <div style="border-left: 3px solid var(--primary); padding-left: 15px; margin: 15px 0;">
+              "Me voy porque después de 2 años en el mismo rol, no veo un camino claro para mi desarrollo profesional."
+            </div>
+            <div style="border-left: 3px solid var(--primary); padding-left: 15px; margin: 15px 0;">
+              "Recibí una oferta con un 20% más de salario por una posición similar, lo que me hizo replantear mi valor de mercado."
+            </div>
+            <div style="border-left: 3px solid var(--warning); padding-left: 15px; margin: 15px 0;">
+              "El constante trabajo fuera de horario laboral ha afectado mi bienestar y vida personal."
+            </div>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-lightbulb"></i> Estrategias de Retención Recomendadas</h4>
+            <ol style="padding-left: 20px;">
+              <li><strong>Implementar planes de carrera transparentes</strong> con trayectorias claras para cada rol.</li>
+              <li><strong>Realizar ajustes salariales basados en benchmarks actualizados</strong> para posiciones clave.</li>
+              <li><strong>Revisar la distribución de carga de trabajo</strong> y contratar refuerzos donde sea necesario.</li>
+              <li><strong>Capacitar a líderes</strong> en coaching y feedback efectivo.</li>
+            </ol>
+          </div>`;
+        }
+        
+        out.innerHTML += result;
+        
+        const actionDiv = document.createElement('div');
+        actionDiv.className = 'action-buttons';
+        actionDiv.innerHTML = '<button class="btn-secondary"><i class="fas fa-download"></i> Descargar Informe</button><button><i class="fas fa-share"></i> Compartir con Líderes</button>';
+        out.appendChild(actionDiv);
+      }, 2000);
+    }
+
+    // Narrativas de KPIs
+    function showNarrative(name) {
+      const out = document.getElementById('narrativeOutput');
+      out.innerHTML = `<div class="output-title"><i class="fas fa-user-chart"></i> Narrativa de desempeño: ${name}</div>`;
+      
+      // Mostrar animación de carga
+      const loading = document.createElement('div');
+      loading.className = 'loading';
+      loading.innerHTML = '<div></div><div></div><div></div><div></div>';
+      out.appendChild(loading);
+      
+      setTimeout(() => {
+        out.removeChild(loading);
+        
+        let narrative = '';
+        let chartData = {};
+        
+        if (name === 'Juan Pérez') {
+          narrative = `<div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">Juan Pérez – Analista de Datos Senior</div>
+            </div>
+            
+            <div class="two-columns">
+              <div>
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-trophy"></i> Logros Destacados</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> Incrementó la eficiencia en generación de reportes en un <strong>20%</strong> mediante automatización.</li>
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> Se posiciona en el <strong>top 5%</strong> del equipo en habilidades de visualización de datos.</li>
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> Superó en un <strong>15%</strong> el promedio departamental en precisión analítica.</li>
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> Implementó dashboard ejecutivo que redujo tiempo de decisión en <strong>35%</strong>.</li>
+                </ul>
+                
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-graduation-cap"></i> Áreas de Desarrollo</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                  <li><i class="fas fa-arrow-circle-up" style="color: var(--primary);"></i> Fortalecer habilidades de comunicación ejecutiva para presentaciones de alto impacto.</li>
+                  <li><i class="fas fa-arrow-circle-up" style="color: var(--primary);"></i> Profundizar conocimientos en modelos predictivos para anticipar tendencias de negocio.</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-chart-line"></i> Competencias Clave</h4>
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>Análisis de Datos</span>
+                    <span>92%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 92%;"></div>
+                  </div>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>Visualización</span>
+                    <span>95%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 95%;"></div>
+                  </div>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>SQL Avanzado</span>
+                    <span>88%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 88%;"></div>
+                  </div>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>Comunicación</span>
+                    <span>78%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 78%;"></div>
+                  </div>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>Liderazgo Técnico</span>
+                    <span>82%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 82%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-lightbulb"></i> Recomendaciones</h4>
+            <ol style="padding-left: 20px;">
+              <li><strong>Asignar liderazgo del proyecto de dashboarding ejecutivo</strong> para capitalizar sus fortalezas en visualización mientras desarrolla habilidades de comunicación.</li>
+              <li><strong>Inscribir en capacitación avanzada de modelos predictivos</strong> (Q3 2025) para reforzar área de oportunidad.</li>
+              <li><strong>Conectarlo con mentores senior</strong> para desarrollar habilidades de storytelling con datos.</li>
+            </ol>
+          </div>`;
+          
+          chartData = {
+            labels: ['Juan Pérez', 'Promedio Equipo', 'Promedio Depto.', 'Promedio Org.'],
+            values: [20, 12, 8, 6]
+          };
+        } else if (name === 'María Gómez') {
+          narrative = `<div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">María Gómez – Coordinadora de Proyectos</div>
+            </div>
+            
+            <div class="two-columns">
+              <div>
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-trophy"></i> Logros Destacados</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> Mejoró la puntualidad en entrega de proyectos en un <strong>12%</strong>.</li>
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> Se ubica en el <strong>top 8%</strong> en gestión efectiva de proyectos complejos.</li>
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> Superó en <strong>5 puntos</strong> los SLAs de calidad vs. promedio organizacional.</li>
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> Redujo costos operativos en <strong>8%</strong> mediante optimización de procesos.</li>
+                </ul>
+                
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-graduation-cap"></i> Áreas de Desarrollo</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                  <li><i class="fas fa-arrow-circle-up" style="color: var(--primary);"></i> Potenciar habilidades de delegación para gestionar equipos más grandes.</li>
+                  <li><i class="fas fa-arrow-circle-up" style="color: var(--primary);"></i> Desarrollar capacidad de gestión de conflictos en equipos multidisciplinarios.</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-chart-line"></i> Competencias Clave</h4>
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>Gestión de Proyectos</span>
+                    <span>90%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 90%;"></div>
+                  </div>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>Comunicación</span>
+                    <span>86%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 86%;"></div>
+                  </div>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>Planificación</span>
+                    <span>94%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 94%;"></div>
+                  </div>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>Delegación</span>
+                    <span>75%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 75%;"></div>
+                  </div>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>Gestión de Stakeholders</span>
+                    <span>88%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 88%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-lightbulb"></i> Recomendaciones</h4>
+            <ol style="padding-left: 20px;">
+              <li><strong>Incorporarla a comités de gobierno de proyectos</strong> para aprovechar su visión estratégica y desarrollar influencia organizacional.</li>
+              <li><strong>Asignarle un proyecto con equipo multidisciplinario más amplio</strong> para desarrollar habilidades de delegación.</li>
+              <li><strong>Programar taller de gestión de conflictos</strong> (Q2 2025) para fortalecer área de oportunidad identificada.</li>
+            </ol>
+          </div>`;
+          
+          chartData = {
+            labels: ['María Gómez', 'Promedio Equipo', 'Promedio Depto.', 'Promedio Org.'],
+            values: [12, 7, 5, 5]
+          };
+        } else if (name === 'Carlos Díaz') {
+          narrative = `<div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">Carlos Díaz – Ingeniero de Software Senior</div>
+            </div>
+            
+            <div class="two-columns">
+              <div>
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-trophy"></i> Logros Destacados</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> Redujo la tasa de bugs en producción en un <strong>25%</strong> mediante mejores prácticas.</li>
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> Se posiciona en el <strong>top 3%</strong> en calidad de código y arquitectura.</li>
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> Superó en un <strong>12%</strong> el estándar de revisión de código vs. departamento.</li>
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> Implementó pipeline de CI/CD que redujo tiempo de despliegue en <strong>40%</strong>.</li>
+                </ul>
+                
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-graduation-cap"></i> Áreas de Desarrollo</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                  <li><i class="fas fa-arrow-circle-up" style="color: var(--primary);"></i> Desarrollar habilidades de mentoría para transferir conocimiento al equipo.</li>
+                  <li><i class="fas fa-arrow-circle-up" style="color: var(--primary);"></i> Fortalecer comunicación con stakeholders no técnicos.</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-chart-line"></i> Competencias Clave</h4>
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>Calidad de Código</span>
+                    <span>96%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 96%;"></div>
+                  </div>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>Arquitectura de Software</span>
+                    <span>94%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 94%;"></div>
+                  </div>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>DevOps</span>
+                    <span>90%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 90%;"></div>
+                  </div>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>Documentación</span>
+                    <span>85%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 85%;"></div>
+                  </div>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>Mentoría</span>
+                    <span>72%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 72%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-lightbulb"></i> Recomendaciones</h4>
+            <ol style="padding-left: 20px;">
+              <li><strong>Asignarle la creación de estándares de calidad para el equipo</strong>, aprovechando su expertise técnico mientras desarrolla habilidades de liderazgo.</li>
+              <li><strong>Incluirlo en el programa de mentores técnicos</strong> para desarrollar capacidades de transferencia de conocimiento.</li>
+              <li><strong>Programar talleres de comunicación técnica</strong> para mejorar presentaciones a audiencias no técnicas.</li>
+            </ol>
+          </div>`;
+          
+          chartData = {
+            labels: ['Carlos Díaz', 'Promedio Equipo', 'Promedio Depto.', 'Promedio Org.'],
+            values: [25, 15, 10, 7]
+          };
+        }
+        
+        out.innerHTML += narrative;
+        
+        renderChart(chartData);
+        
+        const actionDiv = document.createElement('div');
+        actionDiv.className = 'action-buttons';
+        actionDiv.innerHTML = '<button class="btn-secondary"><i class="fas fa-edit"></i> Editar Evaluación</button><button><i class="fas fa-share"></i> Compartir con Gerente</button>';
+        out.appendChild(actionDiv);
+      }, 1500);
+    }
+
+    function renderChart({labels, values}) {
+      const ctx = document.getElementById('chartNarrativasComparativo').getContext('2d');
+      
+      if (window.compChart) window.compChart.destroy();
+      
+      window.compChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Mejora en Desempeño (%)',
+            data: values,
+            backgroundColor: [
+              'rgba(99, 102, 241, 0.8)',
+              'rgba(203, 213, 225, 0.8)',
+              'rgba(203, 213, 225, 0.8)',
+              'rgba(203, 213, 225, 0.8)'
+            ],
+            borderColor: [
+              'rgba(79, 70, 229, 1)',
+              'rgba(148, 163, 184, 1)',
+              'rgba(148, 163, 184, 1)',
+              'rgba(148, 163, 184, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            },
+            title: {
+              display: true,
+              text: 'Comparativa de Desempeño',
+              font: {
+                size: 16
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: Math.max(...values) + 5,
+              title: {
+                display: true,
+                text: 'Porcentaje de Mejora (%)'
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Comparativa'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Asistente de Reclutamiento
+    function showCandidate(name) {
+      const out = document.getElementById('recruitmentOutput');
+      out.innerHTML = `<div class="output-title"><i class="fas fa-user-plus"></i> Análisis de candidato: ${name}</div>`;
+      
+      // Mostrar animación de carga
+      const loading = document.createElement('div');
+      loading.className = 'loading';
+      loading.innerHTML = '<div></div><div></div><div></div><div></div>';
+      out.appendChild(loading);
+      
+      setTimeout(() => {
+        out.removeChild(loading);
+        
+        let profile = '';
+        
+        if (name === 'Ana Ruiz') {
+          profile = `<div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">Ana Ruiz – Analista de BI</div>
+            </div>
+            
+            <div class="two-columns">
+              <div>
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-id-card"></i> Perfil Profesional</h4>
+                <p><strong>Cargo actual:</strong> Analista Senior de BI</p>
+                <p><strong>Departamento:</strong> Tecnología</p>
+                <p><strong>Experiencia:</strong> 5 años</p>
+                <p><strong>Expectativa salarial:</strong> $2.5M - $2.8M</p>
+                <p><strong>Disponibilidad:</strong> 30 días</p>
+                
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-briefcase"></i> Experiencia Laboral</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                  <li><i class="fas fa-building" style="color: var(--primary);"></i> <strong>DSO Technology</strong> (2023-Actual)<br><span style="color: var(--grey-dark);">BI Developer Senior</span></li>
+                  <li><i class="fas fa-building" style="color: var(--primary);"></i> <strong>TechNova</strong> (2022-2023)<br><span style="color: var(--grey-dark);">Data Analyst</span></li>
+                  <li><i class="fas fa-building" style="color: var(--primary);"></i> <strong>InnovaDev</strong> (2021-2022)<br><span style="color: var(--grey-dark);">Junior Data Scientist</span></li>
+                  <li><i class="fas fa-building" style="color: var(--primary);"></i> <strong>DataFlows</strong> (2020-2021)<br><span style="color: var(--grey-dark);">Data Analyst Trainee</span></li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-laptop-code"></i> Competencias Técnicas</h4>
+                <div class="skills-container">
+                  <span class="skill-badge"><i class="fas fa-code"></i> Python</span>
+                  <span class="skill-badge"><i class="fas fa-database"></i> SQL</span>
+                  <span class="skill-badge"><i class="fas fa-chart-bar"></i> R</span>
+                  <span class="skill-badge"><i class="fas fa-chart-line"></i> PowerBI</span>
+                  <span class="skill-badge"><i class="fas fa-table"></i> Tableau</span>
+                  <span class="skill-badge"><i class="fas fa-cogs"></i> ETL</span>
+                  <span class="skill-badge"><i class="fas fa-brain"></i> ML básico</span>
+                </div>
+                
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-star"></i> Proyectos Destacados</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> <strong>Dashboard Ejecutivo:</strong> Creación de sistema de visualización en tiempo real para KPIs financieros.</li>
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> <strong>Sistema de Predicción:</strong> Modelo predictivo para identificar clientes con alto riesgo de abandono.</li>
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> <strong>IA Generativa:</strong> Proyecto personal integrando GPT para análisis automatizado de datos.</li>
+                </ul>
+                
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-plus-circle"></i> Información Adicional</h4>
+                <p>Canal de YouTube educativo sobre análisis de datos e IA con 3,500 suscriptores. Contribuye a proyectos open-source en procesamiento de lenguaje natural.</p>
+              </div>
+            </div>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-question-circle"></i> Preguntas Recomendadas para Entrevista</h4>
+            <ol style="padding-left: 20px;">
+              <li><strong>Observo que has trabajado en 4 empresas diferentes en 5 años. ¿Podrías explicar los motivos de estos cambios?</strong> <span class="badge badge-info">Estabilidad</span></li>
+              <li><strong>Cuéntame en detalle sobre tu proyecto de IA Generativa. ¿Qué arquitectura utilizaste, qué problemas resolviste y cuáles fueron los resultados medibles?</strong> <span class="badge badge-info">Técnica</span></li>
+              <li><strong>Si necesitaras limpiar y procesar un dataset de 1 millón de filas, ¿implementarías una solución con pandas estándar, Dask o PySpark? Justifica tu elección.</strong> <span class="badge badge-info">Profundidad</span></li>
+              <li><strong>Describe una situación donde tuviste que trabajar bajo presión con un equipo y surgieron conflictos. ¿Cómo los manejaste y cuál fue el resultado?</strong> <span class="badge badge-info">Cultural</span></li>
+            </ol>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-chart-pie"></i> Evaluación</h4>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Match técnico</span>
+                <span>92%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 92%; background: #10b981;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Match cultural</span>
+                <span>85%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 85%; background: #10b981;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Potencial de crecimiento</span>
+                <span>90%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 90%; background: #10b981;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Riesgo de rotación temprana</span>
+                <span>35%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 35%; background: #f97316;"></div>
+              </div>
+            </div>
+          </div>`;
+        } else if (name === 'Luis Torres') {
+          profile = `<div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">Luis Torres – Gerente Comercial</div>
+            </div>
+            
+            <div class="two-columns">
+              <div>
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-id-card"></i> Perfil Profesional</h4>
+                <p><strong>Cargo actual:</strong> Subgerente Comercial</p>
+                <p><strong>Departamento:</strong> Comercial</p>
+                <p><strong>Experiencia:</strong> 3 años</p>
+                <p><strong>Expectativa salarial:</strong> $3.2M - $3.5M</p>
+                <p><strong>Disponibilidad:</strong> Inmediata</p>
+                
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-briefcase"></i> Experiencia Laboral</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                  <li><i class="fas fa-building" style="color: var(--primary);"></i> <strong>Global Retail Corp</strong> (2023-Actual)<br><span style="color: var(--grey-dark);">Subgerente Comercial</span></li>
+                  <li><i class="fas fa-building" style="color: var(--primary);"></i> <strong>B2B Solutions</strong> (2022-2023)<br><span style="color: var(--grey-dark);">Key Account Manager</span></li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-laptop-code"></i> Competencias Técnicas</h4>
+                <div class="skills-container">
+                  <span class="skill-badge"><i class="fas fa-handshake"></i> Ventas B2B</span>
+                  <span class="skill-badge"><i class="fas fa-store"></i> Retail</span>
+                  <span class="skill-badge"><i class="fas fa-bullseye"></i> Estrategia Comercial</span>
+                  <span class="skill-badge"><i class="fas fa-user-tie"></i> Negociación</span>
+                  <span class="skill-badge"><i class="fas fa-laptop"></i> Salesforce CRM</span>
+                  <span class="skill-badge"><i class="fas fa-chart-line"></i> Forecast</span>
+                </div>
+                
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-star"></i> Logros Destacados</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> <strong>Incremento en ventas:</strong> 18% YoY en su último trimestre en Global Retail.</li>
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> <strong>Retención de clientes:</strong> Mejoró tasa de retención del 78% al 92%.</li>
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> <strong>Eficiencia comercial:</strong> Implementó dashboard en Salesforce que optimizó ciclo de ventas en 25%.</li>
+                </ul>
+                
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-plus-circle"></i> Información Adicional</h4>
+                <p>Certificación en Sales Management (IESE). Participó en programa de liderazgo para altos potenciales en su empresa actual.</p>
+              </div>
+            </div>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-question-circle"></i> Preguntas Recomendadas para Entrevista</h4>
+            <ol style="padding-left: 20px;">
+              <li><strong>Observo que cambiaste de posición después de 18 meses en B2B Solutions. ¿Qué factores influyeron en esta decisión y cómo impactó en tus resultados comerciales?</strong> <span class="badge badge-info">Trayectoria</span></li>
+              <li><strong>Describe una negociación B2B compleja que hayas liderado. ¿Cuál fue tu estrategia, qué obstáculos enfrentaste y cómo lograste el cierre exitoso?</strong> <span class="badge badge-info">Experiencia</span></li>
+              <li><strong>Mencionas haber implementado un dashboard en Salesforce. ¿Qué métricas incluiste y cómo transformó la toma de decisiones en tiempo real?</strong> <span class="badge badge-info">Técnica</span></li>
+              <li><strong>Imagina que las ventas han caído un 15% en el último trimestre. ¿Qué análisis realizarías y qué plan de acción implementarías para revertir la tendencia?</strong> <span class="badge badge-info">Resolución</span></li>
+            </ol>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-chart-pie"></i> Evaluación</h4>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Match técnico</span>
+                <span>78%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 78%; background: #6366f1;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Match cultural</span>
+                <span>85%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 85%; background: #10b981;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Potencial de liderazgo</span>
+                <span>88%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 88%; background: #10b981;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Experiencia requerida</span>
+                <span>72%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 72%; background: #f97316;"></div>
+              </div>
+            </div>
+          </div>`;
+        } else if (name === 'Sofía Castro') {
+          profile = `<div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">Sofía Castro – Contadora Senior</div>
+            </div>
+            
+            <div class="two-columns">
+              <div>
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-id-card"></i> Perfil Profesional</h4>
+                <p><strong>Cargo actual:</strong> Contadora Senior</p>
+                <p><strong>Departamento:</strong> Contabilidad</p>
+                <p><strong>Experiencia:</strong> 7 años</p>
+                <p><strong>Expectativa salarial:</strong> $2.8M - $3.0M</p>
+                <p><strong>Disponibilidad:</strong> 45 días</p>
+                
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-briefcase"></i> Experiencia Laboral</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                  <li><i class="fas fa-building" style="color: var(--primary);"></i> <strong>KPMG</strong> (2021-Actual)<br><span style="color: var(--grey-dark);">Senior Auditor</span></li>
+                  <li><i class="fas fa-building" style="color: var(--primary);"></i> <strong>Global Finance Corp</strong> (2018-2021)<br><span style="color: var(--grey-dark);">Analista Contable Senior</span></li>
+                  <li><i class="fas fa-building" style="color: var(--primary);"></i> <strong>Financial Services SA</strong> (2017-2018)<br><span style="color: var(--grey-dark);">Analista Contable</span></li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-laptop-code"></i> Competencias Técnicas</h4>
+                <div class="skills-container">
+                  <span class="skill-badge"><i class="fas fa-file-invoice-dollar"></i> IFRS</span>
+                  <span class="skill-badge"><i class="fas fa-landmark"></i> Normativa Fiscal</span>
+                  <span class="skill-badge"><i class="fas fa-calculator"></i> Auditoría</span>
+                  <span class="skill-badge"><i class="fas fa-building"></i> Consolidación</span>
+                  <span class="skill-badge"><i class="fas fa-file-excel"></i> Excel Avanzado</span>
+                  <span class="skill-badge"><i class="fas fa-cogs"></i> SAP FI/CO</span>
+                </div>
+                
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-star"></i> Logros Destacados</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> <strong>Automatización:</strong> Redujo tiempo de cierre contable en 40% mediante automatización.</li>
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> <strong>Auditoría:</strong> Lideró equipo que identificó optimizaciones fiscales por $120M anuales.</li>
+                  <li><i class="fas fa-check-circle" style="color: var(--success);"></i> <strong>Implementación SAP:</strong> Participó como referente técnico en migración completa a SAP.</li>
+                </ul>
+                
+                <h4 style="margin-top: 15px; color: var(--primary-dark);"><i class="fas fa-plus-circle"></i> Información Adicional</h4>
+                <p>Contador Público Certificado. Diplomado en IFRS y Gestión de Riesgos. Experiencia en Big4 (KPMG) con clientes multinacionales.</p>
+              </div>
+            </div>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-question-circle"></i> Preguntas Recomendadas para Entrevista</h4>
+            <ol style="padding-left: 20px;">
+              <li><strong>Describe un desafío técnico significativo que enfrentaste durante un cierre contable y la solución que implementaste.</strong> <span class="badge badge-info">Técnica</span></li>
+              <li><strong>Si tuvieras que aplicar normativa IFRS en un proceso de fusión compleja, ¿cuáles serían los 3 pasos clave que considerarías para asegurar un proceso exitoso?</strong> <span class="badge badge-info">Conocimiento</span></li>
+              <li><strong>Imagina que encuentras una discrepancia de $50K en un balance. ¿Cuál sería tu proceso para investigar, documentar y corregir esta situación?</strong> <span class="badge badge-info">Metodología</span></li>
+              <li><strong>¿Cómo diseñarías un proceso de automatización para conciliación bancaria? Detalla las herramientas que utilizarías y la arquitectura de la solución.</strong> <span class="badge badge-info">Innovación</span></li>
+            </ol>
+            
+            <h4 style="margin-top: 20px; color: var(--primary-dark);"><i class="fas fa-chart-pie"></i> Evaluación</h4>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Match técnico</span>
+                <span>95%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 95%; background: #10b981;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Match cultural</span>
+                <span>90%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 90%; background: #10b981;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Experiencia relevante</span>
+                <span>92%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 92%; background: #10b981;"></div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label">
+                <span>Capacidad analítica</span>
+                <span>88%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 88%; background: #10b981;"></div>
+              </div>
+            </div>
+          </div>`;
+        }
+        
+        out.innerHTML += profile;
+        
+        const actionDiv = document.createElement('div');
+        actionDiv.className = 'action-buttons';
+        actionDiv.innerHTML = '<button class="btn-secondary"><i class="fas fa-calendar-check"></i> Agendar Entrevista</button><button><i class="fas fa-file-download"></i> Descargar Perfil</button>';
+        out.appendChild(actionDiv);
+      }, 1500);
+    }
+
+    // Al cargar, mostrar secciones
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inicializar
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero Kanban - MAIndset</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --primary-dark: #2980b9;
+            --secondary-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --gray-color: #95a5a6;
+            --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            min-height: 100vh;
+        }
+        
+        /* Ocultar cualquier modal de Firebase al inicio */
+        #firebaseConfigModal {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+
+        header {
+            background-color: #fff;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: #000;
+            margin: 0;
+        }
+
+        .logo span.highlight {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        main {
+            padding: 1rem;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .board-container {
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+
+        .board {
+            display: flex;
+            gap: 1rem;
+            min-height: calc(100vh - 190px);
+            padding-bottom: 1rem;
+        }
+
+        .column {
+            background: #fff;
+            border-radius: 4px;
+            width: 300px;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .column-header {
+            padding: 1rem;
+            background-color: var(--light-color);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 4px 4px 0 0;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .column-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .column-count {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.1);
+            color: var(--dark-color);
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+
+        .column-header-actions {
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: var(--gray-color);
+        }
+
+        .column-header-actions:hover {
+            color: var(--secondary-color);
+        }
+
+        .column-content {
+            padding: 1rem;
+            flex-grow: 1;
+            overflow-y: auto;
+            max-height: calc(100vh - 220px);
+        }
+
+        .column-footer {
+            padding: 0.75rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .add-card-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .add-card-btn:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        .add-column-btn {
+            background: rgba(0, 0, 0, 0.05);
+            border: 2px dashed var(--gray-color);
+            color: var(--gray-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 300px;
+            min-width: 300px;
+            min-height: 150px;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .add-column-btn:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            box-shadow: var(--card-shadow);
+            cursor: grab;
+            position: relative;
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .card:active {
+            cursor: grabbing;
+        }
+
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            padding-right: 20px;
+        }
+
+        .card-description {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--gray-color);
+        }
+
+        .card-value {
+            font-weight: bold;
+            color: var(--success-color);
+        }
+
+        .card-actions {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .card:hover .card-actions {
+            opacity: 1;
+        }
+
+        .card-edit, .card-delete {
+            cursor: pointer;
+            padding: 0.2rem;
+            color: var(--gray-color);
+        }
+
+        .card-edit:hover {
+            color: var(--primary-color);
+        }
+
+        .card-delete:hover {
+            color: var(--secondary-color);
+        }
+
+        .dragging {
+            opacity: 0.5;
+        }
+
+        .over {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #dde4e6;
+        }
+
+        .btn-danger {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--gray-color);
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .btn-icon:hover {
+            color: var(--primary-color);
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            transform: translateY(-20px);
+            transition: var(--transition);
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-color);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--secondary-color);
+        }
+
+        .modal-body {
+            padding: 1rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .columns-config {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .column-config-item {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .column-config-item input {
+            flex-grow: 1;
+        }
+
+        .column-config-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .hint {
+            font-size: 0.8rem;
+            color: var(--gray-color);
+            margin-top: 0.25rem;
+        }
+
+        .badge-product {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: var(--primary-color);
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Drag and drop styles */
+        .draggable-ghost {
+            opacity: 0.4;
+            background: var(--light-color);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-color);
+        }
+
+        .empty-state p {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Toast notification */
+        .toast-container {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 2000;
+        }
+
+        .toast {
+            background: white;
+            border-radius: 4px;
+            padding: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transform: translateX(100%);
+            opacity: 0;
+            animation: slideIn 0.3s forwards, fadeOut 0.3s 2.7s forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .toast-warning {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .toast-icon {
+            font-size: 1.2rem;
+        }
+
+        .toast-content {
+            flex-grow: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-message {
+            font-size: 0.8rem;
+            color: var(--gray-color);
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--gray-color);
+            transition: var(--transition);
+        }
+
+        .toast-close:hover {
+            color: var(--dark-color);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .loading-spinner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .loading-spinner i {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        .loading-spinner span {
+            font-size: 1rem;
+            color: var(--dark-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .column {
+                width: 280px;
+                min-width: 280px;
+            }
+
+            .add-column-btn {
+                width: 280px;
+                min-width: 280px;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-database.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-analytics.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCcmW5AKvaKdL3omadOA5HVRbsqcSdE1y8",
+            authDomain: "maindset-crm.firebaseapp.com",
+            databaseURL: "https://maindset-crm-default-rtdb.firebaseio.com",
+            projectId: "maindset-crm",
+            storageBucket: "maindset-crm.firebasestorage.app",
+            messagingSenderId: "598332854787",
+            appId: "1:598332854787:web:3795842cee008a2cfb7436",
+            measurementId: "G-R96RW6X4SV"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const database = getDatabase(app);
+
+        // Exponer Firebase a la ventana para usarlo en nuestro script principal
+        window.firebaseApp = app;
+        window.firebaseDatabase = database;
+        window.firebaseDatabaseRef = ref;
+        window.firebaseDatabaseSet = set;
+        window.firebaseDatabaseOnValue = onValue;
+        window.firebaseDatabaseGet = get;
+    </script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>M<span class="highlight">AI</span>ndset Kanban</h1>
+        </div>
+        <div class="header-actions">
+            <button id="configBoardBtn" class="btn btn-secondary">
+                <i class="fas fa-cog"></i> Configurar Tablero
+            </button>
+            <button id="saveBtn" class="btn btn-primary">
+                <i class="fas fa-cloud-upload-alt"></i> Guardar Cambios
+            </button>
+            <input type="file" id="importInput" accept=".json" style="display: none;">
+            <button id="importBtn" class="btn btn-secondary">
+                <i class="fas fa-upload"></i> Importar Datos
+            </button>
+            <button id="exportBtn" class="btn btn-secondary">
+                <i class="fas fa-download"></i> Exportar Datos
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="board-container">
+            <div id="board" class="board">
+                <!-- Las columnas y tarjetas se generarán dinámicamente -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para agregar/editar tarjeta -->
+    <div id="cardModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="cardModalTitle">Agregar Tarjeta</h3>
+                <button class="modal-close" id="closeCardModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="cardForm">
+                    <input type="hidden" id="cardId">
+                    <input type="hidden" id="cardColumnId">
+                    <div class="form-group">
+                        <label for="cardTitle" class="form-label">Nombre del Cliente</label>
+                        <input type="text" id="cardTitle" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cardProduct" class="form-label">Producto</label>
+                        <select id="cardProduct" class="form-control">
+                            <option value="Explora">Explora</option>
+                            <option value="Acelera">Acelera</option>
+                            <option value="Transforma">Transforma</option>
+                            <option value="Proyecto">Proyecto</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cardCreationDate" class="form-label">Fecha Creación Oportunidad</label>
+                        <input type="date" id="cardCreationDate" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="cardDescription" class="form-label">Descripción</label>
+                        <textarea id="cardDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="cardValue" class="form-label">Valor de Venta (UF)</label>
+                        <input type="number" id="cardValue" class="form-control" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="cardDueDate" class="form-label">Fecha de Vencimiento</label>
+                        <input type="date" id="cardDueDate" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="deleteCardBtn" class="btn btn-danger">Eliminar</button>
+                <button class="btn btn-secondary" id="cancelCardBtn">Cancelar</button>
+                <button class="btn btn-primary" id="saveCardBtn">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para configurar tablero -->
+    <div id="boardConfigModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Configurar Tablero</h3>
+                <button class="modal-close" id="closeBoardConfigModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Columnas del Tablero</label>
+                    <p class="hint">Configura los estados de tu proceso de ventas</p>
+                    <div id="columnsConfig" class="columns-config">
+                        <!-- Las columnas se generarán dinámicamente -->
+                    </div>
+                    <button id="addColumnConfigBtn" class="btn btn-secondary" style="margin-top: 0.5rem;">
+                        <i class="fas fa-plus"></i> Agregar Columna
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelBoardConfigBtn">Cancelar</button>
+                <button class="btn btn-primary" id="saveBoardConfigBtn">Guardar Configuración</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor para notificaciones toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Font Awesome para los iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Eliminar inmediatamente cualquier modal existente
+            const existingModal = document.getElementById('firebaseConfigModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Estado de la aplicación
+            let appState = {
+                columns: [],
+                cards: [],
+                nextCardId: 1
+            };
+            
+            // Banderas para Firebase - Forzar inicialización
+            let firebaseInitialized = true;
+            let kanbanRef;
+
+            try {
+                // Verificar que Firebase se haya cargado correctamente
+                if (window.firebaseDatabase && window.firebaseDatabaseRef) {
+                    // Referencia a la base de datos
+                    kanbanRef = window.firebaseDatabaseRef(window.firebaseDatabase, 'kanban');
+                    
+                    console.log("Firebase inicializado correctamente");
+                } else {
+                    console.warn("El módulo de Firebase no está disponible. Funcionando en modo local.");
+                    firebaseInitialized = false;
+                }
+            } catch (error) {
+                console.error("Error al inicializar Firebase:", error);
+                showToast('Error de Firebase', 'No se pudo conectar con Firebase. Funcionando en modo local.', 'error');
+                firebaseInitialized = false;
+            }
+            
+            // Elementos DOM
+            const board = document.getElementById('board');
+            const cardModal = document.getElementById('cardModal');
+            const boardConfigModal = document.getElementById('boardConfigModal');
+            const cardForm = document.getElementById('cardForm');
+            const cardModalTitle = document.getElementById('cardModalTitle');
+            const cardIdInput = document.getElementById('cardId');
+            const cardColumnIdInput = document.getElementById('cardColumnId');
+            const cardTitleInput = document.getElementById('cardTitle');
+            const cardDescriptionInput = document.getElementById('cardDescription');
+            const cardValueInput = document.getElementById('cardValue');
+            const cardDueDateInput = document.getElementById('cardDueDate');
+            const saveCardBtn = document.getElementById('saveCardBtn');
+            const cancelCardBtn = document.getElementById('cancelCardBtn');
+            const deleteCardBtn = document.getElementById('deleteCardBtn');
+            const closeCardModal = document.getElementById('closeCardModal');
+            const configBoardBtn = document.getElementById('configBoardBtn');
+            const closeBoardConfigModal = document.getElementById('closeBoardConfigModal');
+            const columnsConfig = document.getElementById('columnsConfig');
+            const addColumnConfigBtn = document.getElementById('addColumnConfigBtn');
+            const saveBoardConfigBtn = document.getElementById('saveBoardConfigBtn');
+            const cancelBoardConfigBtn = document.getElementById('cancelBoardConfigBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const importBtn = document.getElementById('importBtn');
+            const exportBtn = document.getElementById('exportBtn');
+            const importInput = document.getElementById('importInput');
+            const toastContainer = document.getElementById('toastContainer');
+
+            // Inicializar la aplicación
+            initApp();
+
+            // Función para inicializar la aplicación
+            function initApp() {
+                // Mostrar indicador de carga
+                showLoading(true);
+                
+                if (firebaseInitialized) {
+                    // Cargar datos desde Firebase
+                    window.firebaseDatabaseGet(kanbanRef)
+                        .then((snapshot) => {
+                            const data = snapshot.val();
+                            if (data) {
+                                appState = data;
+                                renderBoard();
+                                showToast('Datos Cargados', 'Se han cargado los datos desde la nube', 'success');
+                            } else {
+                                initializeDefaultState();
+                                saveToFirebase(); // Guardar el estado inicial
+                            }
+                            
+                            // Iniciar escucha en tiempo real después de la carga inicial
+                            setupRealtimeListener();
+                        })
+                        .catch((error) => {
+                            console.error("Error al cargar datos: ", error);
+                            showToast('Error', 'No se pudieron cargar los datos desde la nube', 'error');
+                            initializeDefaultState();
+                        })
+                        .finally(() => {
+                            showLoading(false);
+                        });
+                } else {
+                    // Modo local - sin Firebase
+                    initializeDefaultState();
+                    showLoading(false);
+                }
+
+                // Configurar eventos de arrastrar y soltar
+                setupDragAndDrop();
+                
+                // Configurar eventos de botones
+                configBoardBtn.addEventListener('click', openBoardConfigModal);
+                saveBtn.addEventListener('click', () => {
+                    if (firebaseInitialized) {
+                        saveToFirebase(true); // true indica mostrar mensaje de confirmación
+                    } else {
+                        showToast('Modo Local', 'Los cambios no se sincronizarán con Firebase', 'warning');
+                    }
+                });
+                importBtn.addEventListener('click', () => importInput.click());
+                importInput.addEventListener('change', importState);
+                exportBtn.addEventListener('click', exportState);
+            }
+            
+            // Función para mostrar indicador de carga
+            function showLoading(show) {
+                const loadingEl = document.getElementById('loadingIndicator');
+                if (show) {
+                    if (!loadingEl) {
+                        const loading = document.createElement('div');
+                        loading.id = 'loadingIndicator';
+                        loading.className = 'loading-overlay';
+                        loading.innerHTML = `
+                            <div class="loading-spinner">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <span>Cargando...</span>
+                            </div>
+                        `;
+                        document.body.appendChild(loading);
+                    }
+                } else if (loadingEl) {
+                    loadingEl.remove();
+                }
+            }
+            
+            // Configurar escucha en tiempo real
+            function setupRealtimeListener() {
+                if (!firebaseInitialized) return;
+                
+                window.firebaseDatabaseOnValue(kanbanRef, (snapshot) => {
+                    const data = snapshot.val();
+                    // Solo actualizar si hay cambios y no es una actualización local
+                    if (data && !appState.isLocalUpdate) {
+                        // Verificar si los datos son diferentes al estado actual
+                        const currentState = JSON.stringify({
+                            columns: appState.columns,
+                            cards: appState.cards,
+                            nextCardId: appState.nextCardId
+                        });
+                        
+                        const newState = JSON.stringify({
+                            columns: data.columns,
+                            cards: data.cards,
+                            nextCardId: data.nextCardId
+                        });
+                        
+                        if (currentState !== newState) {
+                            appState = data;
+                            renderBoard();
+                            showToast('Actualización', 'Los datos se han actualizado desde la nube', 'info');
+                        }
+                    }
+                });
+            }
+            
+            // Guardar a Firebase
+            function saveToFirebase(showConfirmation = false) {
+                if (!firebaseInitialized) {
+                    showToast('Modo Local', 'Los cambios no se sincronizarán con Firebase', 'warning');
+                    return;
+                }
+                
+                // Marcar que es una actualización local para evitar ciclos
+                appState.isLocalUpdate = true;
+                
+                // Guardar en Firebase
+                window.firebaseDatabaseSet(kanbanRef, appState)
+                    .then(() => {
+                        if (showConfirmation) {
+                            showToast('Guardado en la nube', 'Los datos se han sincronizado correctamente', 'success');
+                        }
+                        // Restablecer bandera después de un tiempo
+                        setTimeout(() => {
+                            appState.isLocalUpdate = false;
+                        }, 1000);
+                    })
+                    .catch((error) => {
+                        console.error("Error al guardar: ", error);
+                        showToast('Error', 'No se pudieron guardar los cambios en la nube', 'error');
+                        appState.isLocalUpdate = false;
+                    });
+            }
+
+            // Inicializar estado por defecto
+            function initializeDefaultState() {
+                appState = {
+                    columns: [
+                        { id: 'col1', title: 'Prospectos' },
+                        { id: 'col2', title: 'Contactados' },
+                        { id: 'col3', title: 'Propuesta' },
+                        { id: 'col4', title: 'Negociación' },
+                        { id: 'col5', title: 'Cerrados' }
+                    ],
+                    cards: [
+                        { 
+                            id: 'card1', 
+                            columnId: 'col1', 
+                            title: 'Empresa ABC', 
+                            product: 'Explora',
+                            creationDate: '2025-05-01',
+                            description: 'Interesado en servicios de consultoría IA', 
+                            value: 150, 
+                            dueDate: '2025-05-25'
+                        }
+                    ],
+                    nextCardId: 2
+                };
+                renderBoard();
+            }
+
+            // Renderizar el tablero completo
+            function renderBoard() {
+                board.innerHTML = '';
+                
+                // Renderizar columnas
+                appState.columns.forEach(column => {
+                    const columnElement = createColumnElement(column);
+                    board.appendChild(columnElement);
+                });
+
+                // Agregar botón para nueva columna
+                const addColumnBtn = document.createElement('button');
+                addColumnBtn.className = 'add-column-btn';
+                addColumnBtn.innerHTML = '<i class="fas fa-plus"></i> Agregar Columna';
+                addColumnBtn.addEventListener('click', openBoardConfigModal);
+                board.appendChild(addColumnBtn);
+            }
+
+            // Crear elemento de columna
+            function createColumnElement(column) {
+                const columnElement = document.createElement('div');
+                columnElement.className = 'column';
+                columnElement.dataset.id = column.id;
+
+                // Filtrar tarjetas de esta columna
+                const columnCards = appState.cards.filter(card => card.columnId === column.id);
+                
+                // Crear encabezado de columna
+                const columnHeader = document.createElement('div');
+                columnHeader.className = 'column-header';
+                columnHeader.innerHTML = `
+                    <div>
+                        <span class="column-title">${escapeHtml(column.title)}</span>
+                        <span class="column-count">${columnCards.length}</span>
+                    </div>
+                    <div class="column-header-actions">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </div>
+                `;
+                columnElement.appendChild(columnHeader);
+
+                // Crear contenido de columna
+                const columnContent = document.createElement('div');
+                columnContent.className = 'column-content';
+                columnContent.dataset.columnId = column.id;
+                
+                // Agregar tarjetas a la columna
+                if (columnCards.length > 0) {
+                    columnCards.forEach(card => {
+                        const cardElement = createCardElement(card);
+                        columnContent.appendChild(cardElement);
+                    });
+                }
+                
+                columnElement.appendChild(columnContent);
+
+                // Crear pie de columna
+                const columnFooter = document.createElement('div');
+                columnFooter.className = 'column-footer';
+                
+                const addCardBtn = document.createElement('button');
+                addCardBtn.className = 'add-card-btn';
+                addCardBtn.innerHTML = '<i class="fas fa-plus"></i> Agregar Tarjeta';
+                addCardBtn.addEventListener('click', () => openCardModal(null, column.id));
+                
+                columnFooter.appendChild(addCardBtn);
+                columnElement.appendChild(columnFooter);
+
+                return columnElement;
+            }
+
+            // Crear elemento de tarjeta
+            function createCardElement(card) {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                cardElement.dataset.id = card.id;
+                cardElement.draggable = true;
+                
+                cardElement.innerHTML = `
+                    <div class="card-actions">
+                        <span class="card-edit"><i class="fas fa-edit"></i></span>
+                        <span class="card-delete"><i class="fas fa-trash"></i></span>
+                    </div>
+                    <h4 class="card-title">${escapeHtml(card.title)}</h4>
+                    ${card.product ? `<span class="badge-product">${escapeHtml(card.product)}</span>` : ''}
+                    ${card.description ? `<div class="card-description">${escapeHtml(card.description)}</div>` : ''}
+                    <div class="card-meta">
+                        ${card.dueDate ? `<span><i class="far fa-calendar-alt"></i> ${formatDate(card.dueDate)}</span>` : ''}
+                        ${card.value ? `<span class="card-value">${formatNumber(card.value)} UF</span>` : ''}
+                    </div>
+                `;
+
+                // Eventos de tarjeta
+                cardElement.addEventListener('dragstart', handleDragStart);
+                cardElement.addEventListener('dragend', handleDragEnd);
+                
+                // Evento de edición
+                const editBtn = cardElement.querySelector('.card-edit');
+                editBtn.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    openCardModal(card.id);
+                });
+                
+                // Evento de eliminación
+                const deleteBtn = cardElement.querySelector('.card-delete');
+                deleteBtn.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    if (confirm('¿Estás seguro de que deseas eliminar esta tarjeta?')) {
+                        deleteCard(card.id);
+                    }
+                });
+
+                return cardElement;
+            }
+
+            // Verificar si una tarjeta está vencida
+            function isCardOverdue(card) {
+                if (!card.dueDate) return false;
+                const dueDate = new Date(card.dueDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                return dueDate < today;
+            }
+
+            // Configurar eventos de arrastrar y soltar
+            function setupDragAndDrop() {
+                // Eventos para los contenedores de columnas
+                document.addEventListener('dragover', function(event) {
+                    event.preventDefault();
+                    const columnContent = getDragTarget(event.target);
+                    if (!columnContent) return;
+                    
+                    columnContent.classList.add('over');
+                });
+
+                document.addEventListener('dragleave', function(event) {
+                    const columnContent = getDragTarget(event.target);
+                    if (!columnContent) return;
+                    
+                    columnContent.classList.remove('over');
+                });
+
+                document.addEventListener('drop', function(event) {
+                    event.preventDefault();
+                    const columnContent = getDragTarget(event.target);
+                    if (!columnContent) return;
+                    
+                    columnContent.classList.remove('over');
+                    const cardId = event.dataTransfer.getData('text/plain');
+                    const newColumnId = columnContent.dataset.columnId;
+                    
+                    moveCard(cardId, newColumnId);
+                });
+            }
+
+            // Obtener el contenedor objetivo para el arrastrar y soltar
+            function getDragTarget(element) {
+                if (element.classList && element.classList.contains('column-content')) {
+                    return element;
+                } else {
+                    let parent = element.closest('.column-content');
+                    if (parent) return parent;
+                }
+                return null;
+            }
+
+            // Manejar inicio de arrastre
+            function handleDragStart(event) {
+                event.dataTransfer.setData('text/plain', this.dataset.id);
+                setTimeout(() => {
+                    this.classList.add('dragging');
+                }, 0);
+            }
+
+            // Manejar fin de arrastre
+            function handleDragEnd() {
+                this.classList.remove('dragging');
+            }
+
+            // Mover tarjeta a otra columna
+            function moveCard(cardId, newColumnId) {
+                const cardIndex = appState.cards.findIndex(card => card.id === cardId);
+                if (cardIndex === -1) return;
+                
+                if (appState.cards[cardIndex].columnId !== newColumnId) {
+                    appState.cards[cardIndex].columnId = newColumnId;
+                    renderBoard();
+                    if (firebaseInitialized) {
+                        saveToFirebase();
+                    }
+                    showToast('Tarjeta Movida', 'La tarjeta ha sido movida exitosamente', 'success');
+                }
+            }
+
+            // Abrir modal para agregar/editar tarjeta
+            function openCardModal(cardId = null, columnId = null) {
+                // Resetear formulario
+                cardForm.reset();
+                
+                if (cardId) {
+                    // Modo edición
+                    const card = appState.cards.find(card => card.id === cardId);
+                    if (!card) return;
+                    
+                    cardModalTitle.textContent = 'Editar Tarjeta';
+                    cardIdInput.value = card.id;
+                    cardColumnIdInput.value = card.columnId;
+                    cardTitleInput.value = card.title || '';
+                    document.getElementById('cardProduct').value = card.product || 'Explora';
+                    document.getElementById('cardCreationDate').value = card.creationDate || '';
+                    cardDescriptionInput.value = card.description || '';
+                    cardValueInput.value = card.value || '';
+                    cardDueDateInput.value = card.dueDate || '';
+                    
+                    deleteCardBtn.style.display = 'block';
+                    deleteCardBtn.onclick = () => {
+                        if (confirm('¿Estás seguro de que deseas eliminar esta tarjeta?')) {
+                            deleteCard(card.id);
+                            closeModal(cardModal);
+                        }
+                    };
+                } else {
+                    // Modo creación
+                    cardModalTitle.textContent = 'Agregar Tarjeta';
+                    cardIdInput.value = '';
+                    cardColumnIdInput.value = columnId;
+                    // Establecer la fecha de creación como la fecha actual
+                    document.getElementById('cardCreationDate').value = new Date().toISOString().split('T')[0];
+                    deleteCardBtn.style.display = 'none';
+                }
+                
+                // Mostrar modal
+                cardModal.classList.add('active');
+                cardTitleInput.focus();
+                
+                // Configurar eventos de botones
+                saveCardBtn.onclick = saveCard;
+                cancelCardBtn.onclick = () => closeModal(cardModal);
+                closeCardModal.onclick = () => closeModal(cardModal);
+            }
+
+            // Guardar tarjeta
+            function saveCard() {
+                const title = cardTitleInput.value.trim();
+                if (!title) {
+                    alert('El nombre del cliente es obligatorio');
+                    return;
+                }
+                
+                const cardId = cardIdInput.value;
+                const columnId = cardColumnIdInput.value;
+                
+                if (cardId) {
+                    // Actualizar tarjeta existente
+                    const cardIndex = appState.cards.findIndex(card => card.id === cardId);
+                    if (cardIndex === -1) return;
+                    
+                    appState.cards[cardIndex] = {
+                        ...appState.cards[cardIndex],
+                        title: title,
+                        product: document.getElementById('cardProduct').value,
+                        creationDate: document.getElementById('cardCreationDate').value,
+                        description: cardDescriptionInput.value.trim(),
+                        value: parseFloat(cardValueInput.value) || 0,
+                        dueDate: cardDueDateInput.value
+                    };
+                    
+                    showToast('Tarjeta Actualizada', 'Los cambios han sido guardados', 'success');
+                } else {
+                    // Crear nueva tarjeta
+                    const newCard = {
+                        id: 'card' + appState.nextCardId++,
+                        columnId: columnId,
+                        title: title,
+                        product: document.getElementById('cardProduct').value,
+                        creationDate: document.getElementById('cardCreationDate').value,
+                        description: cardDescriptionInput.value.trim(),
+                        value: parseFloat(cardValueInput.value) || 0,
+                        dueDate: cardDueDateInput.value
+                    };
+                    
+                    appState.cards.push(newCard);
+                    showToast('Tarjeta Creada', 'La tarjeta ha sido creada exitosamente', 'success');
+                }
+                
+                closeModal(cardModal);
+                renderBoard();
+                if (firebaseInitialized) {
+                    saveToFirebase();
+                }
+            }
+
+            // Eliminar tarjeta
+            function deleteCard(cardId) {
+                const cardIndex = appState.cards.findIndex(card => card.id === cardId);
+                if (cardIndex === -1) return;
+                
+                appState.cards.splice(cardIndex, 1);
+                renderBoard();
+                if (firebaseInitialized) {
+                    saveToFirebase();
+                }
+                showToast('Tarjeta Eliminada', 'La tarjeta ha sido eliminada exitosamente', 'success');
+            }
+
+            // Abrir modal de configuración del tablero
+            function openBoardConfigModal() {
+                renderColumnsConfig();
+                boardConfigModal.classList.add('active');
+                
+                // Configurar eventos de botones
+                saveBoardConfigBtn.onclick = saveBoardConfig;
+                cancelBoardConfigBtn.onclick = () => closeModal(boardConfigModal);
+                closeBoardConfigModal.onclick = () => closeModal(boardConfigModal);
+                addColumnConfigBtn.onclick = addColumnConfig;
+            }
+
+            // Renderizar configuración de columnas
+            function renderColumnsConfig() {
+                columnsConfig.innerHTML = '';
+                
+                appState.columns.forEach((column, index) => {
+                    const columnConfig = document.createElement('div');
+                    columnConfig.className = 'column-config-item';
+                    columnConfig.innerHTML = `
+                        <input type="text" class="form-control" value="${escapeHtml(column.title)}" data-id="${column.id}">
+                        <div class="column-config-actions">
+                            ${index > 0 ? '<button class="btn-icon move-up-btn" title="Mover arriba"><i class="fas fa-arrow-up"></i></button>' : '<button class="btn-icon" disabled><i class="fas fa-arrow-up" style="opacity: 0.3;"></i></button>'}
+                            ${index < appState.columns.length - 1 ? '<button class="btn-icon move-down-btn" title="Mover abajo"><i class="fas fa-arrow-down"></i></button>' : '<button class="btn-icon" disabled><i class="fas fa-arrow-down" style="opacity: 0.3;"></i></button>'}
+                            <button class="btn-icon delete-column-btn" title="Eliminar columna"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
+                    
+                    // Evento mover arriba
+                    const moveUpBtn = columnConfig.querySelector('.move-up-btn');
+                    if (moveUpBtn) {
+                        moveUpBtn.addEventListener('click', () => {
+                            moveColumn(index, index - 1);
+                            renderColumnsConfig();
+                        });
+                    }
+                    
+                    // Evento mover abajo
+                    const moveDownBtn = columnConfig.querySelector('.move-down-btn');
+                    if (moveDownBtn) {
+                        moveDownBtn.addEventListener('click', () => {
+                            moveColumn(index, index + 1);
+                            renderColumnsConfig();
+                        });
+                    }
+                    
+                    // Evento eliminar columna
+                    const deleteColumnBtn = columnConfig.querySelector('.delete-column-btn');
+                    deleteColumnBtn.addEventListener('click', () => {
+                        if (confirm('¿Estás seguro de que deseas eliminar esta columna? Todas las tarjetas en esta columna también serán eliminadas.')) {
+                            deleteColumn(column.id);
+                            renderColumnsConfig();
+                        }
+                    });
+                    
+                    columnsConfig.appendChild(columnConfig);
+                });
+            }
+
+            // Mover columna
+            function moveColumn(fromIndex, toIndex) {
+                if (toIndex < 0 || toIndex >= appState.columns.length) return;
+                
+                const column = appState.columns.splice(fromIndex, 1)[0];
+                appState.columns.splice(toIndex, 0, column);
+            }
+
+            // Eliminar columna
+            function deleteColumn(columnId) {
+                const columnIndex = appState.columns.findIndex(column => column.id === columnId);
+                if (columnIndex === -1) return;
+                
+                // Eliminar la columna
+                appState.columns.splice(columnIndex, 1);
+                
+                // Eliminar todas las tarjetas de esa columna
+                appState.cards = appState.cards.filter(card => card.columnId !== columnId);
+            }
+
+            // Agregar configuración de columna
+            function addColumnConfig() {
+                const newColumnId = 'col' + (appState.columns.length + 1);
+                appState.columns.push({
+                    id: newColumnId,
+                    title: 'Nueva Columna'
+                });
+                
+                renderColumnsConfig();
+            }
+
+            // Guardar configuración del tablero
+            function saveBoardConfig() {
+                // Actualizar títulos de columnas
+                const columnInputs = columnsConfig.querySelectorAll('input');
+                columnInputs.forEach(input => {
+                    const columnId = input.dataset.id;
+                    const columnIndex = appState.columns.findIndex(column => column.id === columnId);
+                    if (columnIndex !== -1) {
+                        appState.columns[columnIndex].title = input.value.trim() || 'Sin título';
+                    }
+                });
+                
+                closeModal(boardConfigModal);
+                renderBoard();
+                if (firebaseInitialized) {
+                    saveToFirebase();
+                }
+                showToast('Configuración Guardada', 'La configuración del tablero ha sido actualizada', 'success');
+            }
+
+            // Cerrar modal
+            function closeModal(modal) {
+                modal.classList.remove('active');
+            }
+
+            // Función para importar el estado desde un archivo
+            function importState(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedState = JSON.parse(e.target.result);
+                        
+                        // Validar estructura básica
+                        if (!importedState.columns || !Array.isArray(importedState.columns) || 
+                            !importedState.cards || !Array.isArray(importedState.cards)) {
+                            throw new Error('Formato de archivo inválido');
+                        }
+                        
+                        // Aplicar el estado importado
+                        appState = importedState;
+                        renderBoard();
+                        if (firebaseInitialized) {
+                            saveToFirebase();
+                        }
+                        showToast('Importación Exitosa', 'Los datos han sido importados correctamente', 'success');
+                    } catch (e) {
+                        showToast('Error', 'No se pudo importar los datos: ' + e.message, 'error');
+                        console.error(e);
+                    }
+                    
+                    // Limpiar el input de archivos
+                    event.target.value = '';
+                };
+                
+                reader.onerror = function() {
+                    showToast('Error', 'No se pudo leer el archivo', 'error');
+                    event.target.value = '';
+                };
+                
+                reader.readAsText(file);
+            }
+            
+            // Función para exportar el estado como JSON
+            function exportState() {
+                try {
+                    // Crear blob con los datos
+                    const stateJson = JSON.stringify(appState, null, 2);
+                    const blob = new Blob([stateJson], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    // Crear un enlace de descarga
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'maindset_kanban_' + new Date().toISOString().split('T')[0] + '.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    
+                    // Limpiar
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    }, 0);
+                    
+                    showToast('Exportación Exitosa', 'Los datos del tablero se han exportado correctamente', 'success');
+                } catch (e) {
+                    showToast('Error', 'No se pudo exportar los datos', 'error');
+                    console.error(e);
+                }
+            }
+
+            // Mostrar notificación toast
+            function showToast(title, message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                
+                let icon = 'check-circle';
+                if (type === 'warning') icon = 'exclamation-triangle';
+                if (type === 'error') icon = 'times-circle';
+                if (type === 'info') icon = 'info-circle';
+                
+                toast.innerHTML = `
+                    <div class="toast-icon"><i class="fas fa-${icon}"></i></div>
+                    <div class="toast-content">
+                        <div class="toast-title">${escapeHtml(title)}</div>
+                        <div class="toast-message">${escapeHtml(message)}</div>
+                    </div>
+                    <button class="toast-close">&times;</button>
+                `;
+                
+                // Evento para cerrar toast
+                const closeBtn = toast.querySelector('.toast-close');
+                closeBtn.addEventListener('click', () => {
+                    toast.remove();
+                });
+                
+                // Eliminar automáticamente después de 3 segundos
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+                
+                toastContainer.appendChild(toast);
+            }
+
+            // Funciones auxiliares
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            }
+
+            function formatNumber(number) {
+                return number.toLocaleString('es-ES');
+            }
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+        });
+    </script>
+</body>
+</html>

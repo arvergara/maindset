@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAIndset - Navegando la ola de la Inteligencia Artificial Generativa</title>
+    <style>
+        :root {
+            --primary: #4787f3;
+            --primary-dark: #3063c9;
+            --secondary: #7c3aed;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --light-gray: #e2e8f0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header y Navegación */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+            text-decoration: none;
+        }
+        
+        .logo span {
+            color: var(--primary);
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-menu li {
+            margin-left: 30px;
+        }
+        
+        .nav-menu a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-menu a:hover {
+            color: var(--primary);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+        }
+        
+        /* Sección Hero */
+        .hero {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--light-gray);
+            transform: translateY(-3px);
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        /* Sección Desafíos */
+        .section {
+            padding: 80px 0;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-header h2 {
+            font-size: 32px;
+            color: var(--dark);
+            margin-bottom: 20px;
+        }
+        
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .card p {
+            color: var(--dark);
+        }
+        
+        /* Sección Soluciones */
+        .solutions {
+            background-color: var(--light-gray);
+        }
+        
+        .solution-item {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .solution-content {
+            padding: 30px;
+        }
+        
+        .solution-content h3 {
+            font-size: 24px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .solution-features {
+            margin-top: 20px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .feature-icon {
+            margin-right: 15px;
+            color: var(--primary);
+            font-size: 20px;
+        }
+        
+        /* Sección Testimonios */
+        .testimonials {
+            text-align: center;
+        }
+        
+        .testimonial-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .testimonial-position {
+            color: var(--gray);
+        }
+        
+        /* Sección de Clientes */
+        .clients {
+            background-color: white;
+            text-align: center;
+        }
+        
+        .clients-grid {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+        
+        .client-logo {
+            height: 80px;
+            filter: grayscale(100%);
+            opacity: 0.6;
+            transition: all 0.3s;
+        }
+        
+        .client-logo:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+        }
+        
+        /* Sección Contacto */
+        .contact {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+        }
+        
+        .contact-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .contact-info {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .contact-icon {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .contact-form {
+            margin-top: 50px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid var(--light-gray);
+            font-size: 16px;
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .btn-form {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        
+        .btn-form:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-section h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                flex-direction: column;
+                background-color: white;
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+                padding: 20px 0;
+            }
+            
+            .nav-menu.active {
+                left: 0;
+            }
+            
+            .nav-menu li {
+                margin: 20px 0;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero h1 {
+                font-size: 28px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .section {
+                padding: 60px 0;
+            }
+            
+            .section-header h2 {
+                font-size: 28px;
+            }
+            
+            .solution-item {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header y Navegación -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">M<span>AI</span>ndset</a>
+                <ul class="nav-menu">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Servicios</a></li>
+                    <li><a href="#about">Sobre Nosotros</a></li>
+                    <li><a href="#testimonials">Testimonios</a></li>
+                    <li><a href="#contact">Contacto</a></li>
+                </ul>
+                <div class="mobile-menu-btn">≡</div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Sección Hero con imagen de fondo -->
+    <section class="hero" id="home" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('Maindset_image1.png') no-repeat center center; background-size: cover; height: 100vh; display: flex; align-items: center;">
+        <div class="container">
+            <h1>¿Cómo está navegando tu Equipo la ola de la Inteligencia Artificial Generativa (IAGen)?</h1>
+            <p>El crucial dilema de las organizaciones en 2025</p>
+            <div class="cta-buttons">
+                <a href="#contact" class="btn btn-primary">Solicitar Consultoría</a>
+                <a href="#services" class="btn btn-secondary">Nuestras Soluciones</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Desafíos -->
+    <section class="section" id="challenges">
+        <div class="container">
+            <div class="section-header">
+                <h2>Algunos desafíos detrás de la IA Generativa</h2>
+                <p>Las organizaciones enfrentan una transformación acelerada por la IA Generativa que redefine el mundo empresarial con una velocidad sin precedentes.</p>
+            </div>
+            <div class="cards-container">
+                <div class="card">
+                    <h3>Desconocimiento y Sobrecarga</h3>
+                    <p>Las empresas reconocen el potencial disruptivo de la IA Generativa pero no saben cómo incorporarla estratégicamente a sus operaciones y cultura organizacional.</p>
+                </div>
+                <div class="card">
+                    <h3>Resistencia al Cambio</h3>
+                    <p>Los colaboradores temen que la IA reemplace sus trabajos, generando resistencia y dificultando la adopción de estas tecnologías en los procesos de la empresa.</p>
+                </div>
+                <div class="card">
+                    <h3>Implementación Ineficiente</h3>
+                    <p>Muchas organizaciones invierten en herramientas de IA sin una estrategia clara, resultando en soluciones desconectadas que no generan el valor esperado.</p>
+                </div>
+                <div class="card">
+                    <h3>Riesgos y Compliance</h3>
+                    <p>La implementación apresurada de IA Generativa puede generar riesgos legales, éticos y de seguridad que comprometen la reputación y operación de la empresa.</p>
+                </div>
+            </div>
+            <div class="section-footer" style="margin-top: 40px; text-align: center;">
+                <h3>Todo esto en una tecnología en rápida evolución...</h3>
+                <p style="max-width: 900px; margin: 20px auto;">La evolución de la IAGen exige a las empresas un enfoque ágil y exploratorio para integrar cambios. No es trivial entender los casos de uso, múltiples operadores desarrollando soluciones competitivas, las capacidades emergentes permiten nuevas posibilidades, altas tasas de error/alucinación si no son bien implementadas.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Soluciones -->
+    <section class="section solutions" id="services">
+        <div class="container">
+            <div class="section-header">
+                <h2>Modelo de Transformación en 3 Fases</h2>
+                <p>Acompañamos a las organizaciones en su viaje de transformación con la IA Generativa, desde la estrategia hasta la implementación.</p>
+            </div>
+            <div class="cards-container">
+                <div class="solution-item">
+                    <div class="solution-content">
+                        <h3>Fase 1: Explora</h3>
+                        <p>Assessment y Alineamiento: Evaluamos el nivel de madurez digital de tu organización y desarrollamos una hoja de ruta personalizada para la adopción estratégica de IA Generativa.</p>
+                        <div class="solution-features">
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <span>Assessment básico mediante encuesta online</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <span>Workshops ejecutivos de introducción a la IA generativa</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <span>Roadmap estratégico con KPIs claros</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="solution-item">
+                    <div class="solution-content">
+                        <h3>Fase 2: Acelera</h3>
+                        <p>Ejecución y Delivery: Implementamos pilotos de IA de bajo riesgo mediante sprints ágiles, transfiriendo el conocimiento "on-the-job".</p>
+                        <div class="solution-features">
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <span>Diagnóstico de Madurez y Mapeo de Valor</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <span>Entrevistas en profundidad y análisis de procesos</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <span>Implementación de "AI Lab" para pilotos focalizados</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="solution-item">
+                    <div class="solution-content">
+                        <h3>Fase 3: Transforma</h3>
+                        <p>Expansión y Sostenibilidad: Escalamos soluciones exitosas, consolidando el cambio con estructuras permanentes para sostener la transformación.</p>
+                        <div class="solution-features">
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <span>Diseño y ejecución de plan de escalamiento</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <span>Gestión del cambio y monitoreo de aceptación</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <span>Implementación de "AI Lab" interno y "AI Skill Academy"</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="solution-item">
+                    <div class="solution-content">
+                        <h3>Coaching Corporativo</h3>
+                        <p>Acompañamos a las organizaciones en su proceso de cambio de mentalidad, a través de una asesoría permanente, con Workshops mensuales, up-skilling de distintos equipos.</p>
+                        <div class="solution-features">
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <span>Assessment de madurez en IA Generativa (5 dimensiones)</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <span>Workshops ejecutivos mensuales y seguimiento continuo</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <span>Desarrollo de habilidades en equipos multidisciplinarios</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Testimonios y Clientes -->
+    <section class="section testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2>¿Por qué esto es crítico?</h2>
+                <p>El impacto de la IA Generativa en la productividad y transformación organizacional</p>
+            </div>
+            <div style="margin-bottom: 40px; text-align: center;">
+                <p style="font-size: 18px; margin-bottom: 20px;"><strong>BCG estima que un consultor con IA generativa aumenta su productividad hasta un 40%</strong>, especialmente en servicios tales como análisis de mercado, generación de informes, modelación financiera y diseño de presentaciones.</p>
+                <p style="font-size: 18px;"><strong>Goldman Sachs estima que hasta 300 millones de empleos globales</strong> podrían verse alterados por la IA generativa, siendo banca uno de los sectores más afectados por la automatización de tareas cognitivas.</p>
+            </div>
+            
+            <div class="section-header" style="margin-top: 60px;">
+                <h2>Empresas que Confían en Nosotros</h2>
+                <p>Algunos de nuestros clientes en proyectos de GenAI</p>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin-top: 30px;">
+                <div style="flex: 0 0 200px; text-align: center;">
+                    <h3>Frontal Trust</h3>
+                </div>
+                <div style="flex: 0 0 200px; text-align: center;">
+                    <h3>Gasco</h3>
+                </div>
+                <div style="flex: 0 0 200px; text-align: center;">
+                    <h3>Cariola Díez Pérez-Cotapos</h3>
+                </div>
+                <div style="flex: 0 0 200px; text-align: center;">
+                    <h3>Colmena</h3>
+                </div>
+                <div style="flex: 0 0 200px; text-align: center;">
+                    <h3>ENC Consultants</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Sobre Nosotros -->
+    <section class="section" id="about">
+        <div class="container">
+            <div class="section-header">
+                <h2>Sobre MAIndset</h2>
+                <p>Somos especialistas en IA Generativa ayudando a empresas a navegar el cambio tecnológico más disruptivo de nuestra era.</p>
+            </div>
+            <div class="cards-container">
+                <div class="card">
+                    <h3>Filosofía de Cambio</h3>
+                    <p>Transformamos organizaciones a través de un cambio de mentalidad ("MAIndset"), potenciando las capacidades humanas mediante sistemas de IA, a través de proyectos ágiles con impacto en el negocio.</p>
+                </div>
+                <div class="card">
+                    <h3>Soluciones a Desafíos Críticos</h3>
+                    <p>Ayudamos a las empresas a responder con rapidez al cambio tecnológico, abordando el desconocimiento, la resistencia al cambio, la implementación eficiente y los desafíos de seguridad y compliance.</p>
+                </div>
+                <div class="card">
+                    <h3>Up-skilling Ágil</h3>
+                    <p>Facilitamos la colaboración efectiva entre personas y sistemas de IA mediante transferencia de conocimiento "on-the-job", promoviendo la adopción de IA Generativa de forma flexible y modular.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Contacto -->
+    <section class="section contact" id="contact">
+        <div class="container">
+            <div class="contact-content">
+                <div class="section-header">
+                    <h2>¿Listo para Transformar tu Organización?</h2>
+                    <p>Contáctanos para conocer nuestro programa EXPLORA y descubre cómo la IA Generativa puede potenciar tu empresa.</p>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div>Santiago, Chile</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div>+56 9 3069 1532</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">✉️</div>
+                        <div>contacto@maindset.cl</div>
+                    </div>
+                </div>
+                <div style="background-color: rgba(255,255,255,0.1); padding: 25px; border-radius: 10px; margin: 30px 0; text-align: center;">
+                    <h3 style="margin-bottom: 15px; color: white;">¿Cómo está cambiando el trabajo la IA Generativa?</h3>
+                    <p style="color: white;">La GenAI permite completar "tareas" más rápido, más fácil o mejor. Esta tecnología tiene ciertas habilidades que nos permite abordar nuestras tareas de manera diferente. La tecnología no está (todavía) reemplazando directamente los trabajos; más bien está cambiando las tareas y habilidades que usamos para realizar el trabajo. Lo que sí está pasando crecientemente, es que las personas que no integran esta tecnología en su trabajo están siendo reemplazadas por las que sí lo dominan, porque les permite un nivel de productividad muy superior.</p>
+                </div>
+                <div class="contact-form">
+                    <form id="contactForm" action="#" method="POST">
+                        <div class="form-group">
+                            <label for="name">Nombre</label>
+                            <input type="text" id="name" name="name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="company">Empresa</label>
+                            <input type="text" id="company" name="company" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Mensaje</label>
+                            <textarea id="message" name="message" class="form-control" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-form">Solicitar Consultoría</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>M<span style="color: var(--primary);">AI</span>ndset</h3>
+                    <p>Especialistas en IA Generativa para empresas en Chile y Latinoamérica.</p>
+                    <p style="margin-top: 15px;"><strong>MAIndset</strong> <em>m.</em><br>
+                    Mentalidad organizacional que integra la inteligencia artificial en la forma de pensar y actuar en una empresa, fomentando la innovación continua, la experimentación ágil y el uso estratégico de la IA generativa.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Enlaces Rápidos</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#services">Servicios</a></li>
+                        <li><a href="#about">Sobre Nosotros</a></li>
+                        <li><a href="#testimonials">Testimonios</a></li>
+                        <li><a href="#contact">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contacto</h3>
+                    <ul class="footer-links">
+                        <li>Santiago, Chile</li>
+                        <li>+56 9 3069 1532</li>
+                        <li>contacto@maindset.cl</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 M<span style="color: var(--primary);">AI</span>ndset.cl | Todos los derechos reservados</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Menú móvil
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+            });
+            
+            // Cerrar menú al hacer clic en un enlace
+            document.querySelectorAll('.nav-menu a').forEach(item => {
+                item.addEventListener('click', () => {
+                    navMenu.classList.remove('active');
+                });
+            });
+            
+            // Formulario de contacto
+            const contactForm = document.getElementById('contactForm');
+            
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    // Aquí iría la lógica para enviar el formulario
+                    alert('Gracias por tu mensaje. Nos pondremos en contacto contigo pronto.');
+                    contactForm.reset();
+                });
+            }
+            
+            // Smooth scroll para enlaces de navegación
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
