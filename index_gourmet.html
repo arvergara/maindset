@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Encuesta de Impacto Post-Programa Explora</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%);
+        min-height: 100vh;
+        padding: 20px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+      }
+
+      .survey-container {
+        width: 100%;
+        max-width: 800px;
+        margin: 20px auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 8px;
+        background: #e0e0e0;
+        position: relative;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #4caf50, #81c784);
+        width: 0%;
+        transition: width 0.4s ease;
+        border-radius: 0 4px 4px 0;
+      }
+
+      .survey-header {
+        background: linear-gradient(135deg, #2196f3, #1976d2);
+        color: white;
+        padding: 30px 40px;
+        text-align: center;
+      }
+
+      .survey-title {
+        font-size: 1.8em;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .survey-subtitle {
+        font-size: 1em;
+        opacity: 0.9;
+      }
+
+      .survey-content {
+        padding: 30px;
+      }
+
+      .block {
+        display: none;
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      .block.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .block-title {
+        font-size: 1.4em;
+        color: #1e88e5;
+        margin-bottom: 25px;
+        border-bottom: 2px solid #bbdefb;
+        padding-bottom: 12px;
+      }
+
+      .intro-text {
+        background: #e3f2fd;
+        padding: 20px;
+        border-radius: 12px;
+        border-left: 5px solid #2196f3;
+        margin-bottom: 30px;
+        line-height: 1.7;
+        font-size: 0.95em;
+      }
+      .intro-text h2 {
+        font-size: 1.3em;
+        color: #1565c0;
+        margin-bottom: 10px;
+      }
+      .intro-text p {
+        margin-bottom: 10px;
+      }
+      .intro-text strong {
+        color: #1565c0;
+      }
+      .intro-text em {
+        color: #555;
+        font-style: italic;
+      }
+
+      .question {
+        margin-bottom: 30px;
+        padding: 20px;
+        background: #fdfdfd;
+        border-radius: 12px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+
+      .question-label {
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+        font-size: 1.05em;
+        display: block;
+      }
+      .question-label strong {
+        color: #1e88e5;
+      }
+      .question-label .instruction {
+        font-size: 0.85em;
+        font-weight: normal;
+        color: #555;
+        display: block;
+        margin-top: 5px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1em;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        background-color: #fff;
+      }
+
+      input[type="text"]:focus,
+      input[type="number"]:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: #2196f3;
+        box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+      }
+      textarea {
+        min-height: 80px;
+        resize: vertical;
+      }
+
+      .radio-group,
+      .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      .radio-option,
+      .checkbox-option {
+        display: flex;
+        align-items: center;
+        background: white;
+        padding: 12px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .checkbox-option input[type="checkbox"] {
+        margin-right: 10px;
+        width: 18px;
+        height: 18px;
+        accent-color: #2196f3;
+      }
+
+      .radio-option:hover,
+      .checkbox-option:hover {
+        border-color: #64b5f6;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+      }
+
+      .radio-option.selected,
+      .checkbox-option.selected {
+        border-color: #2196f3;
+        background: #e3f2fd;
+        box-shadow: 0 2px 4px rgba(33, 150, 243, 0.2);
+      }
+      .radio-option.selected span,
+      .checkbox-option.selected span {
+        font-weight: 500;
+        color: #1967d2;
+      }
+
+      .radio-option input,
+      .checkbox-option input[type="radio"] {
+        margin-right: 10px;
+        width: 18px;
+        height: 18px;
+        accent-color: #2196f3;
+      }
+
+      .likert-scale {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin: 20px 0 10px 0;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+      }
+
+      .likert-labels {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 5px;
+        width: 100%;
+        font-size: 0.75em;
+        color: #555;
+        margin-top: 5px;
+        text-align: center;
+      }
+
+      .likert-labels span {
+        padding: 0 2px;
+      }
+
+      .scale-option {
+        width: 38px;
+        height: 38px;
+        border: 2px solid #e0e0e0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: bold;
+        background-color: #f9f9f9;
+      }
+
+      .scale-option:hover {
+        border-color: #64b5f6;
+        transform: scale(1.08);
+        background-color: #e3f2fd;
+      }
+
+      .scale-option.selected {
+        background: #2196f3;
+        color: white;
+        border-color: #1976d2;
+        transform: scale(1.1);
+      }
+
+      .navigation-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 35px;
+        padding-top: 25px;
+        border-top: 1px solid #e0e0e0;
+      }
+
+      .btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 600;
+        min-width: 120px;
+        text-align: center;
+      }
+
+      .btn-primary {
+        background: #2196f3;
+        color: white;
+        box-shadow: 0 2px 5px rgba(33, 150, 243, 0.2);
+      }
+      .btn-primary:hover {
+        background: #1976d2;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3);
+      }
+
+      .btn-secondary {
+        background: #78909c;
+        color: white;
+        box-shadow: 0 2px 5px rgba(120, 144, 156, 0.2);
+      }
+      .btn-secondary:hover {
+        background: #546e7a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(120, 144, 156, 0.3);
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .completion-message {
+        text-align: center;
+        padding: 50px 30px;
+      }
+      .completion-title {
+        font-size: 1.8em;
+        color: #4caf50;
+        margin-bottom: 15px;
+      }
+      .completion-text {
+        font-size: 1.1em;
+        color: #555;
+        line-height: 1.7;
+      }
+
+      .validation-message {
+        color: #d32f2f;
+        font-size: 0.9em;
+        margin-top: 15px;
+        padding: 10px 15px;
+        background: #ffcdd2;
+        border: 1px solid #ef9a9a;
+        border-radius: 6px;
+        display: none;
+        text-align: center;
+        width: 100%;
+      }
+      .validation-message.show {
+        display: block;
+        animation: shake 0.3s;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        50% {
+          transform: translateX(5px);
+        }
+        75% {
+          transform: translateX(-5px);
+        }
+      }
+
+      .conditional-question {
+        display: none;
+        margin-top: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #2196f3;
+      }
+
+      .conditional-question.show {
+        display: block;
+      }
+
+      .nps-scale {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 20px 0 10px 0;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        flex-wrap: wrap;
+      }
+
+      .nps-option {
+        width: 40px;
+        height: 40px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: bold;
+        background-color: #f9f9f9;
+        margin: 2px;
+      }
+
+      .nps-option:hover {
+        border-color: #64b5f6;
+        transform: scale(1.05);
+        background-color: #e3f2fd;
+      }
+
+      .nps-option.selected {
+        background: #2196f3;
+        color: white;
+        border-color: #1976d2;
+        transform: scale(1.1);
+      }
+
+      .nps-labels {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        font-size: 0.8em;
+        color: #555;
+        margin-top: 10px;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 800px) {
+        body {
+          padding: 10px;
+        }
+        .survey-container {
+          margin: 10px;
+          border-radius: 15px;
+        }
+        .survey-header {
+          padding: 25px 20px;
+        }
+        .survey-title {
+          font-size: 1.6em;
+        }
+        .survey-subtitle {
+          font-size: 0.95em;
+        }
+        .survey-content {
+          padding: 20px;
+        }
+        .block-title {
+          font-size: 1.3em;
+        }
+        .intro-text {
+          padding: 15px;
+          font-size: 0.9em;
+        }
+        .question {
+          padding: 15px;
+        }
+        .question-label {
+          font-size: 1em;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+          padding: 10px 14px;
+          font-size: 0.95em;
+        }
+        .radio-option,
+        .checkbox-option {
+          padding: 10px 14px;
+        }
+        .likert-scale,
+        .nps-scale {
+          padding: 10px;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 5px;
+        }
+        .scale-option {
+          width: 35px;
+          height: 35px;
+        }
+        .nps-option {
+          width: 35px;
+          height: 35px;
+        }
+        .likert-labels {
+          font-size: 0.7em;
+          grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+        }
+        .navigation-buttons {
+          flex-direction: column;
+          gap: 10px;
+        }
+        .btn {
+          width: 100%;
+        }
+        .completion-message {
+          padding: 30px 20px;
+        }
+        .completion-title {
+          font-size: 1.6em;
+        }
+        .completion-text {
+          font-size: 1em;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .survey-header {
+          padding: 20px 15px;
+        }
+        .survey-title {
+          font-size: 1.4em;
+        }
+        .survey-subtitle {
+          font-size: 0.85em;
+        }
+        .survey-content {
+          padding: 15px;
+        }
+        .block-title {
+          font-size: 1.2em;
+        }
+        .intro-text {
+          font-size: 0.85em;
+        }
+        .question-label {
+          font-size: 0.95em;
+        }
+        .likert-labels span {
+          line-height: 1.3;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <div class="survey-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <div class="survey-header">
+        <h1 class="survey-title">Encuesta de Impacto</h1>
+        <p class="survey-subtitle">Programa Explora - MAIndset</p>
+      </div>
+
+      <div class="survey-content">
+        <div class="block active" id="intro">
+          <div class="intro-text">
+            <h2>¡Gracias por completar el Programa Explora!</h2>
+            <p>
+              Has finalizado una serie de 4 talleres prácticos donde aprendiste
+              a aplicar la IA Generativa a tus retos reales de trabajo.
+            </p>
+            <p>
+              Esta breve encuesta nos ayudará a medir el impacto del programa y
+              entender cómo ha cambiado tu experiencia con la IA Generativa.
+            </p>
+            <p>
+              Tus respuestas son confidenciales y nos permitirán mejorar futuras
+              ediciones del programa.
+            </p>
+            <p><strong>Tiempo estimado: 5 minutos</strong></p>
+          </div>
+          <div class="navigation-buttons">
+            <div style="flex-grow: 1"></div>
+            <button class="btn btn-primary" onclick="nextBlock()">
+              Comenzar Encuesta
+            </button>
+          </div>
+        </div>
+
+        <!-- Bloque A: Datos de Referencia -->
+        <div class="block" id="blockA">
+          <h2 class="block-title">Datos de Referencia</h2>
+
+          <div class="question">
+            <label class="question-label" for="nombre_completo"
+              >1. Nombre completo</label
+            >
+            <input
+              type="text"
+              id="nombre_completo"
+              name="nombre_completo"
+              placeholder="Ej: Juan Pérez"
+            />
+          </div>
+
+          <div class="question">
+            <label class="question-label"
+              >2. Selecciona todos los talleres a los que asististe
+              <span class="instruction"
+                >Puedes seleccionar múltiples opciones.</span
+              >
+            </label>
+            <div class="checkbox-group">
+              <label class="checkbox-option">
+                <input
+                  type="checkbox"
+                  name="talleres_asistidos"
+                  value="Taller 1: Navegar la Ola de IA Generativa"
+                />
+                <span>Taller 1: Navegar la Ola de IA Generativa</span>
+              </label>
+              <label class="checkbox-option">
+                <input
+                  type="checkbox"
+                  name="talleres_asistidos"
+                  value="Taller 2: Uso de LLMs y prompt engineering"
+                />
+                <span>Taller 2: Uso de LLMs y prompt engineering</span>
+              </label>
+              <label class="checkbox-option">
+                <input
+                  type="checkbox"
+                  name="talleres_asistidos"
+                  value="Taller 3: Agentes y GPTs personalizados"
+                />
+                <span>Taller 3: Agentes y GPTs personalizados</span>
+              </label>
+              <label class="checkbox-option">
+                <input
+                  type="checkbox"
+                  name="talleres_asistidos"
+                  value="Taller 4: RAGs y aplicaciones agénticas para el trabajo"
+                />
+                <span
+                  >Taller 4: RAGs y aplicaciones agénticas para el trabajo</span
+                >
+              </label>
+            </div>
+          </div>
+
+          <div class="validation-message" id="validationMessageA">
+            Por favor, completa tu nombre y selecciona al menos un taller al que
+            asististe.
+          </div>
+          <div class="navigation-buttons">
+            <button class="btn btn-secondary" onclick="prevBlock()">
+              Anterior
+            </button>
+            <button class="btn btn-primary" onclick="nextBlock()">
+              Siguiente
+            </button>
+          </div>
+        </div>
+
+        <!-- Bloque B: Cambio en Percepción y Conocimiento -->
+        <div class="block" id="blockB">
+          <h2 class="block-title">Cambio en Percepción y Conocimiento</h2>
+
+          <div class="question">
+            <label class="question-label"
+              >3. Autoevaluación <strong>actual</strong> de familiaridad con
+              herramientas de IA Generativa (como ChatGPT, Claude, Gemini,
+              Copilot, etc.)</label
+            >
+            <div class="likert-scale">
+              <div class="scale-option" data-value="1">1</div>
+              <div class="scale-option" data-value="2">2</div>
+              <div class="scale-option" data-value="3">3</div>
+              <div class="scale-option" data-value="4">4</div>
+              <div class="scale-option" data-value="5">5</div>
+            </div>
+            <div class="likert-labels">
+              <span>Nunca las he usado / No sé qué son</span>
+              <span>Las he usado muy rara vez / superficialmente</span>
+              <span>Las uso ocasionalmente para tareas puntuales</span>
+              <span>Las uso frecuentemente y empiezo a ver su potencial</span>
+              <span>Las uso a diario, son parte esencial de mi trabajo</span>
+            </div>
+            <input
+              type="hidden"
+              name="familiaridad_actual"
+              id="familiaridadActual"
+            />
+          </div>
+
+          <div class="question">
+            <label class="question-label"
+              ><strong>4. Nivel de acuerdo actual</strong> con estas
+              afirmaciones:</label
+            >
+
+            <div class="question sub-question">
+              <label class="question-label"
+                >Comprendo qué es un LLM y cómo funciona</label
+              >
+              <div class="likert-scale">
+                <div class="scale-option" data-value="1">1</div>
+                <div class="scale-option" data-value="2">2</div>
+                <div class="scale-option" data-value="3">3</div>
+                <div class="scale-option" data-value="4">4</div>
+                <div class="scale-option" data-value="5">5</div>
+              </div>
+              <div class="likert-labels">
+                <span>Totalmente en desacuerdo</span>
+                <span>En desacuerdo</span>
+                <span>Neutral</span>
+                <span>De acuerdo</span>
+                <span>Totalmente de acuerdo</span>
+              </div>
+              <input type="hidden" name="comprension_llm" id="comprensionLLM" />
+            </div>
+
+            <div class="question sub-question">
+              <label class="question-label"
+                >Sé diseñar prompts efectivos para obtener mejores
+                resultados</label
+              >
+              <div class="likert-scale">
+                <div class="scale-option" data-value="1">1</div>
+                <div class="scale-option" data-value="2">2</div>
+                <div class="scale-option" data-value="3">3</div>
+                <div class="scale-option" data-value="4">4</div>
+                <div class="scale-option" data-value="5">5</div>
+              </div>
+              <div class="likert-labels">
+                <span>Totalmente en desacuerdo</span>
+                <span>En desacuerdo</span>
+                <span>Neutral</span>
+                <span>De acuerdo</span>
+                <span>Totalmente de acuerdo</span>
+              </div>
+              <input type="hidden" name="diseno_prompts" id="disenoPrompts" />
+            </div>
+
+            <div class="question sub-question">
+              <label class="question-label"
+                >Entiendo cómo crear y usar agentes/GPTs personalizados</label
+              >
+              <div class="likert-scale">
+                <div class="scale-option" data-value="1">1</div>
+                <div class="scale-option" data-value="2">2</div>
+                <div class="scale-option" data-value="3">3</div>
+                <div class="scale-option" data-value="4">4</div>
+                <div class="scale-option" data-value="5">5</div>
+              </div>
+              <div class="likert-labels">
+                <span>Totalmente en desacuerdo</span>
+                <span>En desacuerdo</span>
+                <span>Neutral</span>
+                <span>De acuerdo</span>
+                <span>Totalmente de acuerdo</span>
+              </div>
+              <input type="hidden" name="crear_agentes" id="crearAgentes" />
+            </div>
+
+            <div class="question sub-question">
+              <label class="question-label"
+                >Comprendo el concepto de RAG y sus aplicaciones</label
+              >
+              <div class="likert-scale">
+                <div class="scale-option" data-value="1">1</div>
+                <div class="scale-option" data-value="2">2</div>
+                <div class="scale-option" data-value="3">3</div>
+                <div class="scale-option" data-value="4">4</div>
+                <div class="scale-option" data-value="5">5</div>
+              </div>
+              <div class="likert-labels">
+                <span>Totalmente en desacuerdo</span>
+                <span>En desacuerdo</span>
+                <span>Neutral</span>
+                <span>De acuerdo</span>
+                <span>Totalmente de acuerdo</span>
+              </div>
+              <input type="hidden" name="concepto_rag" id="conceptoRAG" />
+            </div>
+          </div>
+
+          <div class="question">
+            <label class="question-label"
+              >5. Comparado con antes del programa, mi confianza para usar IA en
+              el trabajo es:</label
+            >
+            <div class="radio-group">
+              <label class="radio-option">
+                <input
+                  type="radio"
+                  name="cambio_confianza"
+                  value="Mucho mayor"
+                />
+                <span>Mucho mayor</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="cambio_confianza" value="Mayor" />
+                <span>Mayor</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="cambio_confianza" value="Igual" />
+                <span>Igual</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="cambio_confianza" value="Menor" />
+                <span>Menor</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="validation-message" id="validationMessageB">
+            Por favor, responde todas las preguntas de este bloque para
+            continuar.
+          </div>
+          <div class="navigation-buttons">
+            <button class="btn btn-secondary" onclick="prevBlock()">
+              Anterior
+            </button>
+            <button class="btn btn-primary" onclick="nextBlock()">
+              Siguiente
+            </button>
+          </div>
+        </div>
+
+        <!-- Bloque C: Aplicación Práctica y Resultados -->
+        <div class="block" id="blockC">
+          <h2 class="block-title">Aplicación Práctica y Resultados</h2>
+
+          <div class="question">
+            <label class="question-label"
+              >6. ¿Desarrollaste algún prompt o agente durante el programa que
+              hoy estés usando activamente en tu trabajo?</label
+            >
+            <div class="radio-group">
+              <label class="radio-option">
+                <input
+                  type="radio"
+                  name="desarrollo_herramientas"
+                  value="Sí, varios (3 o más)"
+                  onchange="toggleConditionalQuestions()"
+                />
+                <span>Sí, varios (3 o más)</span>
+              </label>
+              <label class="radio-option">
+                <input
+                  type="radio"
+                  name="desarrollo_herramientas"
+                  value="Sí, algunos (2)"
+                  onchange="toggleConditionalQuestions()"
+                />
+                <span>Sí, algunos (2)</span>
+              </label>
+              <label class="radio-option">
+                <input
+                  type="radio"
+                  name="desarrollo_herramientas"
+                  value="Sí, uno"
+                  onchange="toggleConditionalQuestions()"
+                />
+                <span>Sí, uno</span>
+              </label>
+              <label class="radio-option">
+                <input
+                  type="radio"
+                  name="desarrollo_herramientas"
+                  value="No, ninguno"
+                  onchange="toggleConditionalQuestions()"
+                />
+                <span>No, ninguno</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="conditional-question" id="conditionalQuestions">
+            <div class="question">
+              <label class="question-label" for="descripcion_desarrollos"
+                >7. Describe brevemente tus 1-2 desarrollos más útiles:</label
+              >
+              <textarea
+                id="descripcion_desarrollos"
+                name="descripcion_desarrollos"
+                rows="3"
+                placeholder="Ej: Creé un prompt para resumir reportes semanales y un GPT personalizado para generar propuestas comerciales..."
+              ></textarea>
+            </div>
+
+            <div class="question">
+              <label class="question-label"
+                >8. ¿En cuánto tiempo semanal estimas que estos desarrollos te
+                ahorran o mejoran tu productividad?</label
+              >
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="ahorro_tiempo" value="0 horas" />
+                  <span>0 horas (no generan ahorro significativo)</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="ahorro_tiempo" value="1-2 horas" />
+                  <span>Entre 1-2 horas por semana</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="ahorro_tiempo" value="3-4 horas" />
+                  <span>Entre 3-4 horas por semana</span>
+                </label>
+                <label class="radio-option">
+                  <input
+                    type="radio"
+                    name="ahorro_tiempo"
+                    value="Más de 4 horas"
+                  />
+                  <span>Más de 4 horas por semana</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="validation-message" id="validationMessageC">
+            Por favor, responde todas las preguntas de este bloque para
+            continuar.
+          </div>
+          <div class="navigation-buttons">
+            <button class="btn btn-secondary" onclick="prevBlock()">
+              Anterior
+            </button>
+            <button class="btn btn-primary" onclick="nextBlock()">
+              Siguiente
+            </button>
+          </div>
+        </div>
+
+        <!-- Bloque D: Satisfacción y Impacto -->
+        <div class="block" id="blockD">
+          <h2 class="block-title">Satisfacción y Impacto</h2>
+
+          <div class="question">
+            <label class="question-label"
+              >9. Calificación general del programa (1-10):</label
+            >
+            <div class="nps-scale">
+              <div class="nps-option" data-value="1">1</div>
+              <div class="nps-option" data-value="2">2</div>
+              <div class="nps-option" data-value="3">3</div>
+              <div class="nps-option" data-value="4">4</div>
+              <div class="nps-option" data-value="5">5</div>
+              <div class="nps-option" data-value="6">6</div>
+              <div class="nps-option" data-value="7">7</div>
+              <div class="nps-option" data-value="8">8</div>
+              <div class="nps-option" data-value="9">9</div>
+              <div class="nps-option" data-value="10">10</div>
+            </div>
+            <div class="nps-labels">
+              <span>Muy malo</span>
+              <span>Excelente</span>
+            </div>
+            <input
+              type="hidden"
+              name="calificacion_programa"
+              id="calificacionPrograma"
+            />
+          </div>
+
+          <div class="question">
+            <label class="question-label"
+              >10. ¿Cuál fue el taller más valioso para ti?</label
+            >
+            <div class="radio-group">
+              <label class="radio-option">
+                <input
+                  type="radio"
+                  name="taller_mas_valioso"
+                  value="Navegar la Ola de IA Generativa"
+                />
+                <span>Navegar la Ola de IA Generativa</span>
+              </label>
+              <label class="radio-option">
+                <input
+                  type="radio"
+                  name="taller_mas_valioso"
+                  value="Uso de LLMs y prompt engineering"
+                />
+                <span>Uso de LLMs y prompt engineering</span>
+              </label>
+              <label class="radio-option">
+                <input
+                  type="radio"
+                  name="taller_mas_valioso"
+                  value="Agentes y GPTs personalizados"
+                />
+                <span>Agentes y GPTs personalizados</span>
+              </label>
+              <label class="radio-option">
+                <input
+                  type="radio"
+                  name="taller_mas_valioso"
+                  value="RAGs y aplicaciones agénticas"
+                />
+                <span>RAGs y aplicaciones agénticas para el trabajo</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="question">
+            <label class="question-label"
+              >11. Probabilidad de recomendar este programa (0-10):</label
+            >
+            <div class="nps-scale">
+              <div class="nps-option" data-value="0">0</div>
+              <div class="nps-option" data-value="1">1</div>
+              <div class="nps-option" data-value="2">2</div>
+              <div class="nps-option" data-value="3">3</div>
+              <div class="nps-option" data-value="4">4</div>
+              <div class="nps-option" data-value="5">5</div>
+              <div class="nps-option" data-value="6">6</div>
+              <div class="nps-option" data-value="7">7</div>
+              <div class="nps-option" data-value="8">8</div>
+              <div class="nps-option" data-value="9">9</div>
+              <div class="nps-option" data-value="10">10</div>
+            </div>
+            <div class="nps-labels">
+              <span>Para nada probable</span>
+              <span>Extremadamente probable</span>
+            </div>
+            <input type="hidden" name="nps_score" id="npsScore" />
+          </div>
+
+          <div class="validation-message" id="validationMessageD">
+            Por favor, responde todas las preguntas de este bloque para
+            continuar.
+          </div>
+          <div class="navigation-buttons">
+            <button class="btn btn-secondary" onclick="prevBlock()">
+              Anterior
+            </button>
+            <button class="btn btn-primary" onclick="nextBlock()">
+              Siguiente
+            </button>
+          </div>
+        </div>
+
+        <!-- Bloque E: Perspectivas Futuras -->
+        <div class="block" id="blockE">
+          <h2 class="block-title">Perspectivas Futuras</h2>
+
+          <div class="question">
+            <label class="question-label"
+              >13. ¿Qué necesitas para seguir avanzando en el uso de IA en tu
+              trabajo?
+              <span class="instruction">Selecciona máximo 2 opciones.</span>
+            </label>
+            <div class="checkbox-group" id="necesidadesFuturas">
+              <label class="checkbox-option">
+                <input
+                  type="checkbox"
+                  name="necesidades_futuras"
+                  value="Más tiempo para experimentar"
+                />
+                <span>Más tiempo para experimentar</span>
+              </label>
+              <label class="checkbox-option">
+                <input
+                  type="checkbox"
+                  name="necesidades_futuras"
+                  value="Acceso a herramientas premium"
+                />
+                <span>Acceso a herramientas premium</span>
+              </label>
+              <label class="checkbox-option">
+                <input
+                  type="checkbox"
+                  name="necesidades_futuras"
+                  value="Acompañamiento técnico adicional"
+                />
+                <span>Acompañamiento técnico adicional</span>
+              </label>
+              <label class="checkbox-option">
+                <input
+                  type="checkbox"
+                  name="necesidades_futuras"
+                  value="Casos de uso específicos de mi área"
+                />
+                <span>Casos de uso específicos de mi área</span>
+              </label>
+              <label class="checkbox-option">
+                <input
+                  type="checkbox"
+                  name="necesidades_futuras"
+                  value="Capacitación para mi equipo"
+                />
+                <span>Capacitación para mi equipo</span>
+              </label>
+              <label class="checkbox-option">
+                <input
+                  type="checkbox"
+                  name="necesidades_futuras"
+                  value="Soporte organizacional/políticas claras"
+                />
+                <span>Soporte organizacional/políticas claras</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="question">
+            <label class="question-label" for="comentario_final"
+              >13. Comentario final (opcional)</label
+            >
+            <textarea
+              id="comentario_final"
+              name="comentario_final"
+              rows="4"
+              placeholder="Comparte cualquier comentario, sugerencia o reflexión sobre el programa..."
+            ></textarea>
+          </div>
+
+          <div class="validation-message" id="validationMessageE">
+            Por favor, selecciona al menos una opción para las necesidades
+            futuras.
+          </div>
+          <div class="navigation-buttons">
+            <button class="btn btn-secondary" onclick="prevBlock()">
+              Anterior
+            </button>
+            <button class="btn btn-primary" onclick="finishSurvey()">
+              Finalizar Encuesta
+            </button>
+          </div>
+        </div>
+
+        <!-- Bloque Final -->
+        <div class="block" id="results">
+          <div class="completion-message">
+            <h2 class="completion-title">
+              ¡Muchas gracias por completar la encuesta!
+            </h2>
+            <p class="completion-text">
+              Tus respuestas son muy valiosas para nosotros y nos ayudarán a
+              mejorar futuras ediciones del Programa Explora. Tu participación y
+              feedback son fundamentales para seguir creando experiencias de
+              aprendizaje que generen valor real en el trabajo diario.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ya no necesitamos el formulario ni el iframe para Supabase -->
+    <!-- Los dejamos comentados por si necesitas volver a Google Sheets -->
+    <!--
+    <form
+      id="hiddenForm"
+      action="https://script.google.com/macros/s/AKfycbxEDi1kikOSxMOf7f-sH5OhCMpadsuRmIp2uDLhN25ol_dzOs5nO7xrXUdqRM-Qfgk87Q/exec"
+      method="POST"
+      target="hidden_iframe"
+      style="display: none"
+    ></form>
+
+    <iframe
+      name="hidden_iframe"
+      id="hidden_iframe"
+      style="display: none"
+    ></iframe>
+    -->
+
+    <script>
+      // Configuración de Supabase
+      const SUPABASE_URL = "https://otpzmnyurmsoyijmnxpy.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90cHptbnl1cm1zb3lpam1ueHB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM1NjA1MDMsImV4cCI6MjA2OTEzNjUwM30.eri9pno-B-joZ9fND2fksI-4jhILhOfEk-TKJrtNlq0";
+
+      // Inicializar Supabase
+      const { createClient } = supabase;
+      const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      // Test de conexión
+      console.log("Supabase inicializado:", supabaseClient);
+
+      // Variables globales
+      let currentBlock = 0;
+      let surveyData = {};
+      let iframeLoaded = false;
+      const blocks = [
+        "intro",
+        "blockA",
+        "blockB",
+        "blockC",
+        "blockD",
+        "blockE",
+        "results",
+      ];
+      const validationMessagesIds = {
+        blockA: "validationMessageA",
+        blockB: "validationMessageB",
+        blockC: "validationMessageC",
+        blockD: "validationMessageD",
+        blockE: "validationMessageE",
+      };
+
+      // Inicialización
+      document.addEventListener("DOMContentLoaded", async function () {
+        setupEventListeners();
+        updateProgress();
+        showBlock(currentBlock);
+
+        // Test de conexión con Supabase
+        try {
+          const { data, error } = await supabaseClient
+            .from("encuesta_gourmet")
+            .select("count")
+            .limit(1);
+
+          if (error) {
+            console.error("Error de conexión con Supabase:", error);
+          } else {
+            console.log("Conexión con Supabase exitosa");
+          }
+        } catch (e) {
+          console.error("Error al conectar con Supabase:", e);
+        }
+      });
+
+      function setupEventListeners() {
+        // Listeners para opciones de radio
+        document.querySelectorAll(".radio-option").forEach((option) => {
+          option.addEventListener("click", function (event) {
+            const input = this.querySelector('input[type="radio"]');
+            if (input && !input.checked) {
+              input.checked = true;
+              const changeEvent = new Event("change", { bubbles: true });
+              input.dispatchEvent(changeEvent);
+            }
+          });
+        });
+
+        document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+          radio.addEventListener("change", function () {
+            document
+              .querySelectorAll(`input[name="${this.name}"]`)
+              .forEach((otherRadio) => {
+                otherRadio
+                  .closest(".radio-option")
+                  .classList.remove("selected");
+              });
+            if (this.checked) {
+              this.closest(".radio-option").classList.add("selected");
+            }
+          });
+        });
+
+        // Listeners para escalas Likert
+        document.querySelectorAll(".scale-option").forEach((option) => {
+          option.addEventListener("click", function () {
+            const value = this.dataset.value;
+            const scale = this.closest(".likert-scale");
+            const hiddenInput = scale.parentElement.querySelector(
+              'input[type="hidden"]'
+            );
+
+            scale.querySelectorAll(".scale-option").forEach((opt) => {
+              opt.classList.remove("selected");
+            });
+
+            this.classList.add("selected");
+            if (hiddenInput) {
+              hiddenInput.value = value;
+            }
+          });
+        });
+
+        // Listeners para escalas NPS
+        document.querySelectorAll(".nps-option").forEach((option) => {
+          option.addEventListener("click", function () {
+            const value = this.dataset.value;
+            const scale = this.closest(".nps-scale");
+            const hiddenInput = scale.parentElement.querySelector(
+              'input[type="hidden"]'
+            );
+
+            scale.querySelectorAll(".nps-option").forEach((opt) => {
+              opt.classList.remove("selected");
+            });
+
+            this.classList.add("selected");
+            if (hiddenInput) {
+              hiddenInput.value = value;
+            }
+          });
+        });
+
+        // Listeners para checkboxes
+        document
+          .querySelectorAll('input[type="checkbox"]')
+          .forEach((checkbox) => {
+            checkbox.addEventListener("change", function () {
+              this.closest(".checkbox-option").classList.toggle(
+                "selected",
+                this.checked
+              );
+
+              // Control para necesidades futuras (máximo 2)
+              if (this.name === "necesidades_futuras") {
+                const checkedCount = document.querySelectorAll(
+                  'input[name="necesidades_futuras"]:checked'
+                ).length;
+                if (checkedCount > 2) {
+                  this.checked = false;
+                  this.closest(".checkbox-option").classList.remove("selected");
+                  const validationMsg =
+                    document.getElementById("validationMessageE");
+                  if (validationMsg) {
+                    validationMsg.textContent =
+                      "Puedes seleccionar un máximo de 2 opciones.";
+                    validationMsg.classList.add("show");
+                    setTimeout(() => {
+                      validationMsg.classList.remove("show");
+                    }, 3000);
+                  }
+                }
+              }
+            });
+          });
+      }
+
+      function nextBlock() {
+        if (!validateCurrentBlock()) {
+          return;
+        }
+        saveBlockData();
+
+        currentBlock++;
+        if (currentBlock < blocks.length) {
+          showBlock(currentBlock);
+          updateProgress();
+        }
+      }
+
+      function prevBlock() {
+        if (currentBlock > 0) {
+          currentBlock--;
+          showBlock(currentBlock);
+          updateProgress();
+        }
+      }
+
+      function showBlock(index) {
+        document.querySelectorAll(".block").forEach((block) => {
+          block.classList.remove("active");
+        });
+
+        const blockElement = document.getElementById(blocks[index]);
+        if (blockElement) {
+          blockElement.classList.add("active");
+          window.scrollTo(0, 0);
+        }
+      }
+
+      function updateProgress() {
+        const surveySteps = blocks.length - 2;
+        let completedSteps = currentBlock - 1;
+        if (currentBlock === 0) completedSteps = -1;
+        if (currentBlock === blocks.length - 1) completedSteps = surveySteps;
+
+        let progressPercentage = 0;
+        if (completedSteps >= 0 && surveySteps > 0) {
+          progressPercentage = (completedSteps / surveySteps) * 100;
+        }
+        if (currentBlock === blocks.length - 1) progressPercentage = 100;
+
+        document.getElementById("progressFill").style.width =
+          Math.min(100, Math.max(0, progressPercentage)) + "%";
+      }
+
+      function validateCurrentBlock() {
+        const blockId = blocks[currentBlock];
+        const validationMessageId = validationMessagesIds[blockId];
+        let validationMessageElement = null;
+
+        if (validationMessageId) {
+          validationMessageElement =
+            document.getElementById(validationMessageId);
+        }
+
+        let isValid = true;
+
+        if (validationMessageElement) {
+          validationMessageElement.textContent =
+            "Por favor, responde todas las preguntas obligatorias de este bloque para continuar.";
+          validationMessageElement.classList.remove("show");
+        }
+
+        switch (blockId) {
+          case "blockA":
+            const nombre = document.querySelector(
+              'input[name="nombre_completo"]'
+            );
+            const talleresChecked = document.querySelectorAll(
+              'input[name="talleres_asistidos"]:checked'
+            );
+            if (
+              !nombre ||
+              !nombre.value.trim() ||
+              talleresChecked.length === 0
+            ) {
+              isValid = false;
+            }
+            break;
+
+          case "blockB":
+            const requiredFields = [
+              "familiaridad_actual",
+              "comprension_llm",
+              "diseno_prompts",
+              "crear_agentes",
+              "concepto_rag",
+            ];
+            requiredFields.forEach((field) => {
+              const input = document.querySelector(`input[name="${field}"]`);
+              if (!input || !input.value) isValid = false;
+            });
+            if (
+              !document.querySelector('input[name="cambio_confianza"]:checked')
+            )
+              isValid = false;
+            break;
+
+          case "blockC":
+            if (
+              !document.querySelector(
+                'input[name="desarrollo_herramientas"]:checked'
+              )
+            ) {
+              isValid = false;
+            } else {
+              const desarrolloValue = document.querySelector(
+                'input[name="desarrollo_herramientas"]:checked'
+              ).value;
+              if (desarrolloValue !== "No, ninguno") {
+                // Validar preguntas condicionales
+                const descripcion = document.querySelector(
+                  'textarea[name="descripcion_desarrollos"]'
+                );
+                const ahorro = document.querySelector(
+                  'input[name="ahorro_tiempo"]:checked'
+                );
+                if (!descripcion || !descripcion.value.trim() || !ahorro) {
+                  isValid = false;
+                }
+              }
+            }
+            break;
+
+          case "blockD":
+            const calificacion = document.querySelector(
+              'input[name="calificacion_programa"]'
+            );
+            const taller = document.querySelector(
+              'input[name="taller_mas_valioso"]:checked'
+            );
+            const nps = document.querySelector('input[name="nps_score"]');
+            if (
+              !calificacion ||
+              !calificacion.value ||
+              !taller ||
+              !nps ||
+              !nps.value
+            ) {
+              isValid = false;
+            }
+            break;
+
+          case "blockE":
+            const necesidadesChecked = document.querySelectorAll(
+              'input[name="necesidades_futuras"]:checked'
+            );
+            if (necesidadesChecked.length === 0) {
+              isValid = false;
+            }
+            break;
+        }
+
+        if (!isValid && validationMessageElement) {
+          validationMessageElement.classList.add("show");
+        }
+        return isValid;
+      }
+
+      function saveBlockData() {
+        const currentBlockElement = document.getElementById(
+          blocks[currentBlock]
+        );
+        if (!currentBlockElement) return;
+
+        const inputs = currentBlockElement.querySelectorAll(
+          "input, select, textarea"
+        );
+
+        // Clear arrays for checkbox groups
+        if (blocks[currentBlock] === "blockA") {
+          surveyData.talleres_asistidos = [];
+        }
+        if (blocks[currentBlock] === "blockE") {
+          surveyData.necesidades_futuras = [];
+        }
+
+        inputs.forEach((input) => {
+          const name = input.name;
+          if (!name) return;
+
+          if (input.type === "radio") {
+            if (input.checked) surveyData[name] = input.value;
+          } else if (input.type === "checkbox") {
+            if (!surveyData[name]) surveyData[name] = [];
+            if (input.checked && !surveyData[name].includes(input.value)) {
+              surveyData[name].push(input.value);
+            }
+          } else if (input.type === "hidden") {
+            surveyData[name] = input.value;
+          } else {
+            surveyData[name] = input.value.trim();
+          }
+        });
+
+        console.log(
+          "Survey Data after block " + blocks[currentBlock] + ":",
+          JSON.parse(JSON.stringify(surveyData))
+        );
+      }
+
+      function toggleConditionalQuestions() {
+        const desarrolloValue = document.querySelector(
+          'input[name="desarrollo_herramientas"]:checked'
+        )?.value;
+        const conditionalQuestions = document.getElementById(
+          "conditionalQuestions"
+        );
+
+        if (desarrolloValue && desarrolloValue !== "No, ninguno") {
+          conditionalQuestions.classList.add("show");
+        } else {
+          conditionalQuestions.classList.remove("show");
+          // Clear conditional fields
+          document.querySelector(
+            'textarea[name="descripcion_desarrollos"]'
+          ).value = "";
+          document
+            .querySelectorAll('input[name="ahorro_tiempo"]')
+            .forEach((radio) => {
+              radio.checked = false;
+              radio.closest(".radio-option").classList.remove("selected");
+            });
+        }
+      }
+
+      function finishSurvey() {
+        if (!validateCurrentBlock()) return;
+        saveBlockData();
+        console.log(
+          "Final Survey Data:",
+          JSON.parse(JSON.stringify(surveyData))
+        );
+
+        // Enviar datos al Google Apps Script
+        submitToGoogleSheets();
+      }
+
+      async function submitToGoogleSheets() {
+        // Mostrar mensaje de enviando
+        const resultsBlock = document.getElementById("results");
+        resultsBlock.innerHTML = `
+                <div class="completion-message">
+                    <h2 class="completion-title">Enviando respuestas...</h2>
+                    <p class="completion-text">Por favor espera un momento mientras guardamos tus respuestas.</p>
+                </div>
+            `;
+
+        // Mostrar el bloque de resultados
+        currentBlock = blocks.indexOf("results");
+        showBlock(currentBlock);
+        updateProgress();
+
+        try {
+          // Preparar datos para Supabase
+          const dataToSend = {
+            // Metadatos
+            institucion: 'Gourmet',
+            tipo_encuesta: 'final',
+            nombre_completo: surveyData.nombre_completo || "",
+            talleres_asistidos: Array.isArray(surveyData.talleres_asistidos)
+              ? surveyData.talleres_asistidos.join(", ")
+              : surveyData.talleres_asistidos || "",
+            familiaridad_actual:
+              parseInt(surveyData.familiaridad_actual) || null,
+            comprension_llm: parseInt(surveyData.comprension_llm) || null,
+            diseno_prompts: parseInt(surveyData.diseno_prompts) || null,
+            crear_agentes: parseInt(surveyData.crear_agentes) || null,
+            concepto_rag: parseInt(surveyData.concepto_rag) || null,
+            cambio_confianza: surveyData.cambio_confianza || "",
+            desarrollo_herramientas: surveyData.desarrollo_herramientas || "",
+            descripcion_desarrollos: surveyData.descripcion_desarrollos || "",
+            ahorro_tiempo: surveyData.ahorro_tiempo || "",
+            calificacion_programa:
+              parseInt(surveyData.calificacion_programa) || null,
+            taller_mas_valioso: surveyData.taller_mas_valioso || "",
+            nps_score: parseInt(surveyData.nps_score) || null,
+            necesidades_futuras: Array.isArray(surveyData.necesidades_futuras)
+              ? surveyData.necesidades_futuras.join(", ")
+              : surveyData.necesidades_futuras || "",
+            comentario_final: surveyData.comentario_final || "",
+          };
+
+          console.log("Datos a enviar a Supabase:", dataToSend);
+
+          // Enviar a Supabase
+          const { data, error } = await supabaseClient
+            .from("encuestas_explora")
+            .insert([dataToSend])
+            .select();
+
+          if (error) {
+            console.error("Error al guardar en Supabase:", error);
+            throw error;
+          }
+
+          console.log("Datos guardados exitosamente:", data);
+          showSuccessMessage();
+        } catch (error) {
+          console.error("Error completo:", error);
+          console.error("Tipo de error:", typeof error);
+          console.error("Error stringified:", JSON.stringify(error));
+          
+          const errorMessage = error?.message || error?.error_description || JSON.stringify(error) || 'Error desconocido';
+          
+          resultsBlock.innerHTML = `
+            <div class="completion-message">
+                <h2 class="completion-title" style="color: #d32f2f;">Error al enviar</h2>
+                <p class="completion-text">Hubo un problema al guardar tus respuestas. Por favor intenta nuevamente o contacta al administrador.</p>
+                <p style="color: #666; font-size: 0.9em; margin-top: 10px;">Error: ${errorMessage}</p>
+                <p style="color: #666; font-size: 0.8em; margin-top: 5px;">Por favor, revisa la consola del navegador (F12) para más detalles.</p>
+            </div>
+          `;
+          
+          // Re-habilitar el botón para poder reintentar
+          const submitButton = document.querySelector(".btn-primary[onclick='submitToGoogleSheets()']");
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "Reintentar Envío";
+          }
+        }
+      }
+
+      function showSuccessMessage() {
+        const resultsBlock = document.getElementById("results");
+        resultsBlock.innerHTML = `
+                <div class="completion-message">
+                    <h2 class="completion-title">¡Muchas gracias por completar la encuesta!</h2>
+                    <p class="completion-text">Tus respuestas han sido guardadas exitosamente. Son muy valiosas para nosotros y nos ayudarán a mejorar futuras ediciones del Programa Explora. Tu participación y feedback son fundamentales para seguir creando experiencias de aprendizaje que generen valor real en el trabajo diario.</p>
+                </div>
+            `;
+      }
+    </script>
+  </body>
+</html>
